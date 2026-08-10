@@ -7,9 +7,16 @@ ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_SKILLS = {
     "abaqus-bc",
     "abaqus-dependency-preflight-validator",
+    "abaqus-docs",
+    "abaqus-export",
+    "abaqus-field",
+    "abaqus-geometry",
+    "abaqus-interaction",
     "abaqus-load",
     "abaqus-material",
+    "abaqus-mesh",
     "abaqus-odb",
+    "abaqus-output",
     "abaqus-parametric-project-starter",
     "abaqus-script-debugging-checklist",
     "abaqus-shared-naming-manifest-builder",
@@ -89,6 +96,13 @@ class RepositoryContractTests(unittest.TestCase):
             if "superpowers" not in path.parts:
                 sample = path.read_bytes()[:4096]
                 self.assertNotIn(b"\x00", sample, f"binary file: {path}")
+
+    def test_public_compatibility_contract_is_documented(self):
+        compatibility = ROOT / "docs" / "compatibility.md"
+        self.assertTrue(compatibility.is_file(), compatibility)
+        text = compatibility.read_text(encoding="utf-8")
+        for term in ("Abaqus/CAE", "abqpy", "read-only", "dry-run", "engineering review"):
+            self.assertIn(term, text, term)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,13 @@
 | Constitutive inputs lack provenance | `abaqus-material` | step review |
 | Procedure, sequence, or increments are uncertain | `abaqus-step` | output/ODB review |
 | Results must be extracted without altering the database | `abaqus-odb` | claim-specific audit |
+| An API symbol or signature is release-sensitive | `abaqus-docs` | static/runtime compatibility check |
+| A geometry, mesh, image, or result must leave the model | `abaqus-export` | provenance and digest audit |
+| Stress, temperature, pore pressure, or velocity is mapped | `abaqus-field` | ODB and physical review |
+| Parts, partitions, instances, sets, or surfaces are uncertain | `abaqus-geometry` | naming manifest, mesh review |
+| Contact, tie, connector, or coupling behavior is uncertain | `abaqus-interaction` | geometry, mesh, boundary review |
+| Element type, seed, quality, or interface mapping is uncertain | `abaqus-mesh` | geometry or tunnel-local review |
+| Output variables, regions, or sampling are unclear | `abaqus-output` | ODB and claim-readiness audit |
 
 Use the smallest set that covers the decision. A domain skill does not replace
 the preflight validator when names and dependencies span files.

@@ -1,8 +1,8 @@
 # Abaqus Agent Skills
 
-[中文说明](README.zh-CN.md) · [Quickstart](docs/quickstart.md) · [Choose a skill](docs/skill-selection.md)
+[中文说明](README.zh-CN.md) · [Quickstart](docs/quickstart.md) · [Choose a skill](docs/skill-selection.md) · [Compatibility](docs/compatibility.md)
 
-Ten reusable workflow skills for AI coding agents that help plan, review, and
+Seventeen reusable workflow skills for AI coding agents that help plan, review, and
 audit Abaqus automation. The collection focuses on traceable inputs, stable
 naming, diagnosis-first debugging, and an explicit boundary between a solver
 run and engineering validation.
@@ -21,6 +21,13 @@ run and engineering validation.
 | `abaqus-material` | Reviewing traceable material and section definitions |
 | `abaqus-step` | Reviewing procedures, increments, and step sequences |
 | `abaqus-odb` | Inspecting result databases without modifying them |
+| `abaqus-docs` | Verifying release-specific API symbols and signatures |
+| `abaqus-export` | Planning approved, traceable geometry and result exports |
+| `abaqus-field` | Reviewing initial and predefined field contracts |
+| `abaqus-geometry` | Reviewing parts, assemblies, partitions, sets, and surfaces |
+| `abaqus-interaction` | Reviewing contact, tie, connectors, and constraints |
+| `abaqus-mesh` | Reviewing element choices, controls, quality, and mapping |
+| `abaqus-output` | Designing claim-driven field and history output |
 
 ## Install
 
@@ -35,7 +42,9 @@ skills appear relevant.
 python -m unittest discover -s tests -v
 ```
 
-The checks require Python 3.10 or newer and do not require Abaqus.
+The checks require Python 3.10 or newer and do not require Abaqus. See the
+[compatibility boundary](docs/compatibility.md) before porting a skill to a
+different Abaqus/CAE or embedded Python release.
 
 ## Scope and independence
 
