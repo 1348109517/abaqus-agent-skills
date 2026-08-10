@@ -1,5 +1,8 @@
 # Example workflows
 
+For a synthetic end-to-end composition of the expanded public catalog, see
+[Public adaptation example](public-adaptation.md).
+
 ## New project
 
 Use the project starter to establish configuration and output boundaries, the

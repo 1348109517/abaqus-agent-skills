@@ -8,6 +8,8 @@ Repository-level tests enforce the public contract: exact release membership,
 front matter, required guidance sections, valid relative links, absence of
 release-sensitive text, and bounded text-only files. These checks validate
 packaging and safety hygiene; they do not validate finite-element physics.
+Release portability and the boundary between static `abqpy` lookup and runtime
+Abaqus/CAE behavior are documented in [compatibility.md](compatibility.md).
 
 The workflow boundary is:
 
