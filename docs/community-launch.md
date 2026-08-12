@@ -26,9 +26,10 @@ stars, or a single static report prove engineering value.
 Promotion proceeds one channel at a time:
 
 1. **Specialist communities.** Publish a technical walkthrough to the SIMULIA
-   Community. Before posting to an Abaqus or FEA subreddit, check the current
-   rules and ask moderators when promotional status is unclear. Disclose the
-   maintainer relationship, early-stage status, and independent-project status.
+   Community. Check the current rules before posting. If promotional status is
+   unclear, use the separate moderator-inquiry action below before preparing a
+   final post. Disclose the maintainer relationship, early-stage status, and
+   independent-project status.
 2. **Reproducible English tutorial.** Publish an original DEV Community article
    showing the synthetic contract, the naming-drift finding, and the evidence
    boundary. Ask for technical feedback, bug reports, and additional synthetic
@@ -43,10 +44,32 @@ Promotion proceeds one channel at a time:
 
 No automatic cross-posting is in scope. Each site is a separate public action.
 
-## Exact-post approval gate
+## Separate external-action approval gates
 
-Before any external post, prepare an approval record containing every item
-below:
+Moderator contact and public publication are two different external actions.
+Neither action is sent automatically, and approval for one action never
+authorizes the other.
+
+### Action A: moderator inquiry
+
+Use this action only when a site's current rules do not make promotional status
+clear. Prepare an exact-action approval packet containing:
+
+- the exact site and channel;
+- the account that would send the inquiry;
+- the intended moderator or other exact recipient;
+- the complete inquiry text, including any links or attachments; and
+- the proposed time to send it.
+
+The maintainer must approve this exact inquiry packet before the inquiry is
+sent. The approval authorizes only that inquiry; it does not authorize a public
+post or a cross-post. After a response, record the response date, recipient,
+exact rule evidence or response text, and any resulting posting constraint.
+
+### Action B: final public post
+
+After Action A when an inquiry was needed, prepare a second exact-post approval
+packet containing every item below:
 
 - exact site, channel, and current rule source;
 - intended account and maintainer disclosure;
@@ -54,13 +77,15 @@ below:
 - verified release or stable-branch URL;
 - exact runnable command and a reproduced output excerpt;
 - allowed call to action (run the demo, report a reproducible issue, or propose
-  a synthetic case); and
-- proposed publication time and any moderator response.
+  a synthetic case);
+- the recorded moderator response evidence, when Action A was used; and
+- proposed publication time.
 
-The maintainer must approve that exact destination and exact copy after this
-record is complete. Editing the site, account, title, body, links, or images
-creates a new approval requirement. Do not log in, contact a moderator, publish,
-or cross-post before exact-post approval.
+The maintainer must approve this second exact destination and exact copy after
+the Action A response evidence is included. Editing the site, account,
+recipient, title, body, links, images, or timing creates a new approval
+requirement. Only the approved final post may be sent; no moderator inquiry,
+publication, or cross-post is automatic.
 
 ## Engagement and evidence boundary
 
@@ -105,9 +130,17 @@ engagement. Do not convert measurements into adoption claims.
 - [ ] Repository tests, link checks, and sensitive-text checks pass.
 - [ ] The post identifies the maintainer, early-stage status, and independent
       project boundary.
-- [ ] The exact destination, account, title, body, links, images, command,
-      output excerpt, rule source, and time are recorded.
-- [ ] The maintainer approved that exact post after the record was completed.
+- [ ] If rules were unclear, the Action A moderator-inquiry packet named the
+      site, sending account, exact recipient, exact inquiry text, and time;
+      the maintainer approved it before it was sent.
+- [ ] If Action A was used, its response date, recipient, and exact rule
+      evidence or response text are recorded.
+- [ ] The Action B final-post packet records the exact destination, account,
+      title, body, links, images, command, output excerpt, rule source,
+      response evidence when applicable, and time.
+- [ ] The maintainer gave a second approval for that exact Action B post after
+      the response evidence was included.
+- [ ] No moderator inquiry, publication, or cross-post was sent automatically.
 - [ ] No star, vote, comment, follower, or adoption request appears in the copy.
 
 For contribution routes after launch, use [CONTRIBUTING](../CONTRIBUTING.md)
