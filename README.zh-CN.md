@@ -17,6 +17,9 @@ cd abaqus-agent-skills
 python scripts/run_demo.py
 ```
 
+如果 Windows 检出时报 `Filename too long`，请改在靠近文件系统根目录的短路径下
+克隆；详见[兼容性边界](docs/compatibility.md)。
+
 默认命令检查 `complete` 场景，并生成：
 
 ```text

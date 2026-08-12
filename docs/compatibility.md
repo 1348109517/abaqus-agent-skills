@@ -26,6 +26,16 @@ release-specific and must be checked in the target environment.
    review note or pull request.
 5. Obtain an independent engineering review before using a result as evidence.
 
+## Windows checkout paths
+
+Some Windows Git installations still enforce the traditional path-length
+limit. If checkout reports `Filename too long`, clone the repository into a
+short working directory close to the filesystem root, or enable long-path
+support through your organization's approved Windows and Git policy. Moving
+to a short parent is the smallest reversible workaround and does not change
+repository content. The v0.3.0 tag was clean-clone tested from a short Windows
+path.
+
 ## Public-data boundary
 
 Examples and documentation must remain synthetic or intentionally shareable.
