@@ -1,5 +1,6 @@
 import dataclasses
 import json
+import os
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
@@ -81,10 +82,17 @@ def write_reports(report: AuditReport, output_dir: Path) -> tuple[Path, Path]:
     markdown_path = output_dir / "report.md"
     planned = ((json_path, render_json(report)), (markdown_path, render_markdown(report)))
     for path, content in planned:
-        if path.exists() and path.read_text(encoding="utf-8") != content:
+        if not os.path.lexists(path):
+            continue
+        if path.is_symlink():
+            raise FileExistsError(f"refusing to replace symbolic link report: {path}")
+        if not path.is_file():
+            raise FileExistsError(f"refusing to replace non-file report entry: {path}")
+        if path.read_text(encoding="utf-8") != content:
             raise FileExistsError(f"refusing to replace non-identical report: {path}")
     output_dir.mkdir(parents=True, exist_ok=True)
     for path, content in planned:
-        if not path.exists():
-            path.write_text(content, encoding="utf-8")
+        if not os.path.lexists(path):
+            with path.open("x", encoding="utf-8") as handle:
+                handle.write(content)
     return json_path, markdown_path

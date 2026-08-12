@@ -68,6 +68,27 @@ class DemoCliTests(unittest.TestCase):
             self.assertEqual("", result.stdout)
             self.assertFalse((Path(directory) / "out").exists())
 
+    def test_custom_contract_with_contract_finding_returns_two_without_reports(self):
+        with TemporaryDirectory() as directory:
+            contract = json.loads(
+                (SCENARIOS / "complete" / "model-contract.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            contract["model"]["instances"][0]["part"] = []
+            contract_path = Path(directory) / "invalid-shape.json"
+            output = Path(directory) / "out"
+            contract_path.write_text(json.dumps(contract), encoding="utf-8")
+
+            result = self.run_cli(
+                "--contract", str(contract_path), "--output-dir", str(output)
+            )
+
+            self.assertEqual(2, result.returncode)
+            self.assertIn("C-CONTRACT-001", result.stderr)
+            self.assertEqual("", result.stdout)
+            self.assertFalse(output.exists())
+
     def test_scenario_and_contract_are_mutually_exclusive(self):
         with TemporaryDirectory() as directory:
             result = self.run_cli(

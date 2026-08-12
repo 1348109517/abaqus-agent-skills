@@ -65,6 +65,35 @@ def _check_type(problems, contract, path, expected, skill, next_action):
         )
 
 
+def _check_nonempty_string(problems, value, location, skill, next_action):
+    if not isinstance(value, str) or not value.strip():
+        problems.append(
+            finding(
+                "C-CONTRACT-001",
+                "REVIEW_REQUIRED",
+                f"Contract field {location} must be a non-empty string.",
+                location,
+                skill,
+                next_action,
+            )
+        )
+
+
+def _check_bounded_string(problems, value, location, allowed, skill, next_action):
+    if not isinstance(value, str) or value not in allowed:
+        states = ", ".join(sorted(allowed))
+        problems.append(
+            finding(
+                "C-CONTRACT-001",
+                "REVIEW_REQUIRED",
+                f"Contract field {location} must be one of: {states}.",
+                location,
+                skill,
+                next_action,
+            )
+        )
+
+
 def check_contract_shape(contract: Mapping[str, Any]):
     """Validate the collection/object boundary before running other checks."""
 
@@ -83,9 +112,8 @@ def check_contract_shape(contract: Mapping[str, Any]):
         ]
 
     problems = []
-    string_fields = ("schema_version", "scenario_id")
-    for key in string_fields:
-        _check_type(problems, contract, (key,), (str,), skill, next_action)
+    for key in ("schema_version", "scenario_id"):
+        _check_nonempty_string(problems, contract.get(key), key, skill, next_action)
 
     top_level_types = {
         "units": Mapping,
@@ -106,9 +134,14 @@ def check_contract_shape(contract: Mapping[str, Any]):
 
     model = contract.get("model")
     if isinstance(model, Mapping):
-        _check_type(problems, contract, ("model", "name"), (str,), skill, next_action)
+        _check_nonempty_string(problems, model.get("name"), "model.name", skill, next_action)
         for key in ("parts", "instances", "sets", "surfaces"):
             _check_type(problems, contract, ("model", key), (list,), skill, next_action)
+
+    units = contract.get("units")
+    if isinstance(units, Mapping):
+        for key in ("length", "force"):
+            _check_nonempty_string(problems, units.get(key), f"units.{key}", skill, next_action)
 
     review_intent = contract.get("review_intent")
     if isinstance(review_intent, Mapping):
@@ -120,6 +153,24 @@ def check_contract_shape(contract: Mapping[str, Any]):
             skill,
             next_action,
         )
+
+    evidence = contract.get("evidence")
+    if isinstance(evidence, Mapping):
+        evidence_states = {
+            "static_review": {"required", "complete"},
+            "solver": {"not_run", "complete", "failed"},
+            "physical_review": {"required", "complete"},
+            "engineering_claim": {"blocked", "approved"},
+        }
+        for key, allowed in evidence_states.items():
+            _check_bounded_string(
+                problems,
+                evidence.get(key),
+                f"evidence.{key}",
+                allowed,
+                skill,
+                next_action,
+            )
 
     # The other checks expect lists of objects.  Report malformed entries here
     # so a partially edited contract cannot turn a static audit into a crash.
@@ -151,6 +202,107 @@ def check_contract_shape(contract: Mapping[str, Any]):
                         skill,
                         next_action,
                     )
+                )
+
+    named_collections = (
+        ("materials",),
+        ("sections",),
+        ("steps",),
+        ("boundary_conditions",),
+        ("loads",),
+        ("interactions",),
+        ("outputs",),
+        ("model", "parts"),
+        ("model", "instances"),
+        ("model", "sets"),
+        ("model", "surfaces"),
+    )
+    for path in named_collections:
+        for index, item in enumerate(_items(contract, path)):
+            if isinstance(item, Mapping):
+                _check_nonempty_string(
+                    problems,
+                    item.get("name"),
+                    ".".join(path) + f"[{index}].name",
+                    skill,
+                    next_action,
+                )
+
+    reference_fields = (
+        (("model", "instances"), ("part",)),
+        (("model", "sets"), ("instance",)),
+        (("model", "surfaces"), ("instance",)),
+        (("sections",), ("material", "part")),
+        (("boundary_conditions",), ("region", "step")),
+        (("loads",), ("region", "step")),
+        (("interactions",), ("main", "secondary")),
+        (("mesh_intents",), ("part", "element_family")),
+    )
+    for path, fields in reference_fields:
+        for index, item in enumerate(_items(contract, path)):
+            if isinstance(item, Mapping):
+                for field in fields:
+                    _check_nonempty_string(
+                        problems,
+                        item.get(field),
+                        ".".join(path) + f"[{index}].{field}",
+                        skill,
+                        next_action,
+                    )
+
+    for index, item in enumerate(_items(contract, ("steps",))):
+        if isinstance(item, Mapping):
+            order = item.get("order")
+            if not isinstance(order, int) or isinstance(order, bool) or order < 0:
+                problems.append(
+                    finding(
+                        "C-CONTRACT-001",
+                        "REVIEW_REQUIRED",
+                        f"Contract field steps[{index}].order must be a nonnegative integer.",
+                        f"steps[{index}].order",
+                        skill,
+                        next_action,
+                    )
+                )
+
+    for index, item in enumerate(_items(contract, ("outputs",))):
+        if not isinstance(item, Mapping):
+            continue
+        variables = item.get("variables")
+        location = f"outputs[{index}].variables"
+        if not isinstance(variables, list):
+            problems.append(
+                finding(
+                    "C-CONTRACT-001",
+                    "REVIEW_REQUIRED",
+                    f"Contract field {location} must be a list.",
+                    location,
+                    skill,
+                    next_action,
+                )
+            )
+            continue
+        if not variables:
+            _check_nonempty_string(problems, None, location, skill, next_action)
+        for variable_index, variable in enumerate(variables):
+            _check_nonempty_string(
+                problems,
+                variable,
+                f"{location}[{variable_index}]",
+                skill,
+                next_action,
+            )
+
+    if isinstance(review_intent, Mapping):
+        required_outputs = review_intent.get("requires_outputs")
+        if isinstance(required_outputs, list):
+            for index, output_name in enumerate(required_outputs):
+                _check_nonempty_string(
+                    problems,
+                    output_name,
+                    f"review_intent.requires_outputs[{index}]",
+                    skill,
+                    next_action,
                 )
 
     if problems:

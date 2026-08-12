@@ -65,6 +65,46 @@ class AuditCheckTests(unittest.TestCase):
         self.assertEqual("C-CONTRACT-001", findings[0].code)
         self.assertEqual("REVIEW_REQUIRED", findings[0].status)
 
+    def test_invalid_consumed_scalars_return_contract_findings_without_crashing(self):
+        cases = (
+            ("schema_version", "", "schema_version"),
+            ("scenario_id", "", "scenario_id"),
+            ("model.name", "", "model.name"),
+            ("instances.part", [], "model.instances[0].part"),
+            ("steps.order", True, "steps[0].order"),
+            ("outputs.variables", [""], "outputs[0].variables[0]"),
+            ("outputs.variables type", "U", "outputs[0].variables"),
+            ("review_intent.requires_outputs", None, "review_intent.requires_outputs"),
+            ("evidence.solver", "unknown", "evidence.solver"),
+        )
+        for label, value, location in cases:
+            with self.subTest(field=label):
+                contract = complete_contract()
+                if label == "schema_version":
+                    contract["schema_version"] = value
+                elif label == "scenario_id":
+                    contract["scenario_id"] = value
+                elif label == "model.name":
+                    contract["model"]["name"] = value
+                elif label == "instances.part":
+                    contract["model"]["instances"][0]["part"] = value
+                elif label == "steps.order":
+                    contract["steps"][0]["order"] = value
+                elif label.startswith("outputs.variables"):
+                    contract["outputs"][0]["variables"] = value
+                elif label == "review_intent.requires_outputs":
+                    contract["review_intent"]["requires_outputs"] = value
+                else:
+                    contract["evidence"]["solver"] = value
+
+                findings = audit_contract(contract)
+                self.assertTrue(findings)
+                self.assertTrue(
+                    all(item.code == "C-CONTRACT-001" for item in findings),
+                    findings,
+                )
+                self.assertIn(location, [item.location for item in findings])
+
     def test_findings_follow_registry_then_lexical_location_order(self):
         contract = complete_contract()
         contract["loads"].append(

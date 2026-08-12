@@ -122,6 +122,12 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         contract = load_contract(contract_path)
         findings = audit_contract(contract)
+        if arguments.contract is not None and any(
+            item.code == "C-CONTRACT-001" and item.status != "PASS"
+            for item in findings
+        ):
+            print("Error: custom contract failed C-CONTRACT-001 validation.", file=sys.stderr)
+            return 2
         report = build_report(contract_path, contract, findings)
         output_dir = arguments.output_dir
         if output_dir is None:

@@ -1,4 +1,5 @@
 import json
+import os
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -127,6 +128,30 @@ class ReportTests(unittest.TestCase):
             with self.assertRaisesRegex(FileExistsError, "non-identical report"):
                 write_reports(report, output)
             self.assertEqual(render_json(report), (output / "report.json").read_text(encoding="utf-8"))
+
+    def test_writer_refuses_non_file_report_entry(self):
+        report = self.make_report()
+        with TemporaryDirectory() as directory:
+            output = Path(directory)
+            (output / "report.json").mkdir()
+            with self.assertRaisesRegex(FileExistsError, "non-file report"):
+                write_reports(report, output)
+            self.assertFalse((output / "report.md").exists())
+
+    def test_writer_refuses_dangling_symlink_report_entry(self):
+        report = self.make_report()
+        with TemporaryDirectory() as directory:
+            output = Path(directory)
+            target = output / "missing-target.json"
+            path = output / "report.json"
+            try:
+                os.symlink(target, path)
+            except OSError as exc:
+                self.skipTest(f"symbolic links unavailable: {exc}")
+            with self.assertRaisesRegex(FileExistsError, "symbolic link"):
+                write_reports(report, output)
+            self.assertTrue(os.path.lexists(path))
+            self.assertFalse((output / "report.md").exists())
 
 
 if __name__ == "__main__":

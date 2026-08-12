@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 - 2026-08-12
+## 0.3.0 - 2026-08-13
 
 - Add a deterministic, standard-library-only CLI demo for synthetic
   tunnel-and-soil contract audits with complete, naming-drift, and

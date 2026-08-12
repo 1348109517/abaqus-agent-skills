@@ -34,7 +34,7 @@ REQUIRED_HEADINGS = {
     "Acceptance checklist",
 }
 TEXT_SUFFIXES = {".md", ".py", ".yml", ".yaml", ".txt"}
-INTERNAL_SCRATCH_PARTS = frozenset({"superpowers", ".superpowers"})
+INTERNAL_SCRATCH_PARTS = frozenset({".superpowers"})
 SENSITIVE_PATTERNS = {
     "absolute Windows path": re.compile(r"(?i)(?<![A-Za-z])[C-Z]:[\\/]"),
     "email address": re.compile(r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}"),
@@ -124,8 +124,19 @@ class RepositoryContractTests(unittest.TestCase):
             (root / "__pycache__" / "module.pyc").write_bytes(b"\x00internal")
             release_paths = set(release_files(root))
             text_paths = set(text_files(root))
-            self.assertEqual({public_text, public_binary}, release_paths)
-            self.assertEqual({public_text}, text_paths)
+            self.assertEqual(
+                {
+                    public_text,
+                    public_binary,
+                    root / "docs" / "superpowers" / "scratch.md",
+                    root / "docs" / "superpowers" / "scratch.bin",
+                },
+                release_paths,
+            )
+            self.assertEqual(
+                {public_text, root / "docs" / "superpowers" / "scratch.md"},
+                text_paths,
+            )
 
     def test_no_large_or_binary_release_files(self):
         for path in release_files():

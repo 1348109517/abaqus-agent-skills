@@ -4,8 +4,9 @@ Future work is evidence-led and has no promised dates.
 
 ## Completed context
 
-- v0.3.0 includes a synthetic cross-skill contract demo that exercises
-  geometry, mesh, interaction, field, output, and export contracts together.
+- v0.3.0 includes a synthetic cross-skill contract demo that checks declared
+  naming and model entities, materials and sections, steps, boundary
+  conditions, loads, interactions, mesh intent, outputs, and evidence gates.
 
 ## Future scope
 
