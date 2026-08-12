@@ -2,6 +2,7 @@ import json
 import subprocess
 import sys
 import unittest
+import uuid
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -104,13 +105,17 @@ class DemoCliTests(unittest.TestCase):
         with TemporaryDirectory() as directory:
             custom = Path(directory) / "custom-contract.json"
             source = SCENARIOS / "complete" / "model-contract.json"
-            custom.write_bytes(source.read_bytes())
+            scenario = f"custom-{uuid.uuid4().hex}"
+            contract = json.loads(source.read_text(encoding="utf-8"))
+            contract["scenario_id"] = scenario
+            custom.write_text(json.dumps(contract), encoding="utf-8")
             result = self.run_cli("--contract", str(custom))
             self.assertEqual(0, result.returncode, result.stderr)
-            output = ROOT / "build" / "demo" / "complete"
+            output = ROOT / "build" / "demo" / scenario
             try:
                 self.assertTrue((output / "report.json").is_file())
                 self.assertTrue((output / "report.md").is_file())
+                self.assertIn(f"Scenario: {scenario}", result.stdout)
                 self.assertIn(str(output / "report.json"), result.stdout)
             finally:
                 for path in (output / "report.json", output / "report.md"):
@@ -118,12 +123,6 @@ class DemoCliTests(unittest.TestCase):
                         path.unlink()
                 if output.exists():
                     output.rmdir()
-                build_demo = ROOT / "build" / "demo"
-                if build_demo.exists():
-                    build_demo.rmdir()
-                build = ROOT / "build"
-                if build.exists():
-                    build.rmdir()
 
     def test_report_collision_is_an_io_error_without_partial_output(self):
         with TemporaryDirectory() as directory:
