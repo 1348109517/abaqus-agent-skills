@@ -7,6 +7,7 @@ from tests.demo_fixtures import complete_contract
 class AuditCheckTests(unittest.TestCase):
     def test_complete_contract_emits_one_pass_for_each_check_code(self):
         findings = audit_contract(complete_contract())
+        self.assertEqual(8, len(findings))
         self.assertEqual(
             {
                 "C-CONTRACT-001",
