@@ -19,6 +19,10 @@ cd abaqus-agent-skills
 python scripts/run_demo.py
 ```
 
+If a Windows checkout reports `Filename too long`, clone into a short working
+directory close to the filesystem root; the
+[compatibility guide](docs/compatibility.md) explains the boundary.
+
 The default command reports the `complete` scenario and writes:
 
 ```text

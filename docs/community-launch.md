@@ -21,6 +21,27 @@ unmerged work branch. A post may invite a reproducible bug report, technical
 feedback, or a new synthetic scenario. It may not imply that download counts,
 stars, or a single static report prove engineering value.
 
+## Verified v0.3.0 launch facts
+
+The tagged release is
+<https://github.com/1348109517/abaqus-agent-skills/releases/tag/v0.3.0>.
+Post-merge validation reproduced the three documented summaries: `complete`
+reported 8 `PASS`, 0 `WARNING`, and 0 `REVIEW_REQUIRED`; both `naming-drift`
+and `evidence-overreach` reported 7 `PASS`, 0 `WARNING`, and 1
+`REVIEW_REQUIRED`. The default-branch workflow passed on Ubuntu and Windows
+with Python 3.10 and 3.12.
+
+Channel-specific drafts and gates are recorded separately:
+
+- [SIMULIA Community draft](launch/v0.3.0-simulia-draft.md)
+- [DEV Community tutorial draft](launch/v0.3.0-devto-draft.md)
+- [Open-source community draft](launch/v0.3.0-oss-community-draft.md)
+- [Show HN readiness review](launch/v0.3.0-show-hn-readiness.md)
+
+These files are review artifacts, not publication authorization. An intended
+account value of `REVIEW_REQUIRED` or a rule state of `SOURCE_UNAVAILABLE`
+blocks the related external action.
+
 ## Four launch stages
 
 Promotion proceeds one channel at a time:
@@ -123,11 +144,12 @@ engagement. Do not convert measurements into adoption claims.
 
 ## Release and launch checklist
 
-- [ ] A clean clone runs `python scripts/run_demo.py` with no third-party
+- [x] A clean clone runs `python scripts/run_demo.py` with no third-party
       dependency or Abaqus installation.
-- [ ] The three scenarios produce their documented deterministic summaries and
+- [x] The three scenarios produce their documented deterministic summaries and
       both report formats.
-- [ ] Repository tests, link checks, and sensitive-text checks pass.
+- [x] Repository tests, link checks, and sensitive-text checks pass for the
+      tagged release and the launch-draft branch.
 - [ ] The post identifies the maintainer, early-stage status, and independent
       project boundary.
 - [ ] If rules were unclear, the Action A moderator-inquiry packet named the

@@ -11,6 +11,9 @@ cd abaqus-agent-skills
 python scripts/run_demo.py
 ```
 
+On Windows, use a short working directory close to the filesystem root if Git
+reports `Filename too long`; see the [compatibility guide](compatibility.md).
+
 The command audits the synthetic `complete` contract and writes:
 
 ```text
