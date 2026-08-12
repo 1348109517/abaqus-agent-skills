@@ -1,0 +1,53 @@
+name: Synthetic example
+description: Suggest a public, deterministic synthetic contract or teaching scenario.
+title: "[example] "
+labels:
+  - documentation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This route is for invented examples that help readers reproduce a workflow. It is not a route for sharing production files or requesting an engineering decision.
+  - type: input
+    id: scenario_id
+    attributes:
+      label: Scenario identifier
+      description: Give a stable name that can be used in a command or test.
+      placeholder: missing-output-request
+    validations:
+      required: true
+  - type: textarea
+    id: teaching_goal
+    attributes:
+      label: Teaching goal
+      description: Explain the workflow dependency or evidence boundary this example demonstrates.
+    validations:
+      required: true
+  - type: textarea
+    id: contract
+    attributes:
+      label: Synthetic contract or input
+      description: Paste a small invented contract or link to a clean-room patch. Do not include production paths or real model data.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: expected_findings
+    attributes:
+      label: Expected findings
+      description: List expected statuses, finding codes, locations, and the next review action.
+      placeholder: C-REF-001; REVIEW_REQUIRED; loads.Gravity.region
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Evidence and data boundary
+      description: Confirm the public-example constraints.
+      options:
+        - label: All identifiers and values are synthetic or clean-room and safe to redistribute.
+          required: true
+        - label: The example does not claim solver completion, physical validity, safety, or engineering approval.
+          required: true
+        - label: I removed proprietary text, customer data, private paths, credentials, and real project artifacts.
+          required: true

@@ -1,0 +1,54 @@
+name: Bug report
+description: Report a reproducible problem in a skill, demo, or documentation path.
+title: "[bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for a clear reproduction. Please remove real project data and local paths before submitting.
+        The demo performs static contract checks only; an issue cannot treat its report as solver or physics evidence.
+  - type: input
+    id: component
+    attributes:
+      label: Skill or command
+      description: Identify the skill, documentation page, or command involved.
+      placeholder: abaqus-mesh or python scripts/run_demo.py
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Give a clean-room or synthetic input and the exact command or prompt that reproduces the problem.
+      placeholder: Include only invented identifiers, values, and relative paths.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual result
+      description: State what should happen, what happened, and the relevant finding code or output excerpt.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Give the operating system, Python version, and repository revision if relevant.
+      placeholder: Windows or Linux; Python 3.12; v0.3.0
+    validations:
+      required: true
+  - type: checkboxes
+    id: evidence_boundary
+    attributes:
+      label: Evidence and data boundary
+      description: Confirm the material and the claim boundary.
+      options:
+        - label: I removed proprietary, customer, real-project, and absolute-path data; the reproduction is synthetic or clean-room.
+          required: true
+        - label: I am reporting static behavior separately from solver completion, physical review, and engineering claims.
+          required: true
+        - label: I have not included credentials, private files, or unlicensed text.
+          required: true
