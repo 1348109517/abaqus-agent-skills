@@ -1,0 +1,52 @@
+name: Skill proposal
+description: Propose a narrowly scoped workflow skill with a reproducible public contract.
+title: "[skill] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe a reusable workflow, not a private project adapter. Proposed material must be synthetic or clean-room and must preserve the boundary between static review and engineering validation.
+  - type: input
+    id: skill_name
+    attributes:
+      label: Proposed skill name
+      description: Use a short, stable, lowercase name with hyphens.
+      placeholder: abaqus-example-review
+    validations:
+      required: true
+  - type: textarea
+    id: trigger
+    attributes:
+      label: Trigger and users
+      description: Start with the condition that should activate the skill and identify the intended users.
+    validations:
+      required: true
+  - type: textarea
+    id: inputs_outputs
+    attributes:
+      label: Inputs and outputs
+      description: List the evidence the skill consumes and the artifacts or next actions it produces.
+      placeholder: Use names, units, relative paths, report fields, and explicit missing-evidence behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Synthetic example
+      description: Provide a small clean-room prompt or contract and the expected result.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety_boundary
+    attributes:
+      label: Evidence and data boundary
+      description: Confirm that the proposal is suitable for a public repository.
+      options:
+        - label: The example uses synthetic or clean-room data and contains no proprietary manuals, model files, customer data, or private paths.
+          required: true
+        - label: The proposal distinguishes static checks, optional solver evidence, physical review, and any engineering claim.
+          required: true
+        - label: I will document missing evidence instead of filling gaps with plausible values or claiming adoption.
+          required: true

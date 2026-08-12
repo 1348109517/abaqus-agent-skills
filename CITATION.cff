@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use these workflow skills, please cite this repository."
+title: "Abaqus Agent Skills"
+type: software
+authors:
+  - name: "Abaqus Agent Skills project"
+    alias: "1348109517"
+repository-code: "https://github.com/1348109517/abaqus-agent-skills"
+url: "https://github.com/1348109517/abaqus-agent-skills"
+license: Apache-2.0
+version: 0.3.0
+date-released: "2026-08-13"

@@ -1,11 +1,62 @@
 # Abaqus Agent Skills
 
-[中文说明](README.zh-CN.md) · [Quickstart](docs/quickstart.md) · [Choose a skill](docs/skill-selection.md) · [Compatibility](docs/compatibility.md)
+[中文说明](README.zh-CN.md) · [Quickstart](docs/quickstart.md) · [Demo guide](docs/demo.md) · [Choose a skill](docs/skill-selection.md) · [Compatibility](docs/compatibility.md)
 
 Seventeen reusable workflow skills for AI coding agents that help plan, review, and
 audit Abaqus automation. The collection focuses on traceable inputs, stable
 naming, diagnosis-first debugging, and an explicit boundary between a solver
 run and engineering validation.
+
+## Three-minute quickstart
+
+The runnable demo uses only the Python standard library. It reviews a small,
+synthetic tunnel-and-soil contract and writes deterministic Markdown and JSON
+reports; it does not install Abaqus or run a solver.
+
+```bash
+git clone https://github.com/1348109517/abaqus-agent-skills.git
+cd abaqus-agent-skills
+python scripts/run_demo.py
+```
+
+The default command reports the `complete` scenario and writes:
+
+```text
+build/demo/complete/report.json
+build/demo/complete/report.md
+```
+
+The three scenario names can also be selected explicitly:
+
+```bash
+python scripts/run_demo.py --scenario complete
+python scripts/run_demo.py --scenario naming-drift
+python scripts/run_demo.py --scenario evidence-overreach
+```
+
+The `complete` scenario has eight static passes. `naming-drift` identifies an
+unresolved region reference, and `evidence-overreach` identifies an engineering
+claim that skips solver evidence or physical review. The latter two are
+completed static audits and intentionally return exit status 0 while recording
+`REVIEW_REQUIRED` findings.
+
+To preview a skill installation without copying files:
+
+```bash
+python scripts/install_skill.py abaqus-mesh --target build/install-check
+```
+
+The installer is dry-run by default. Add `--apply` only after reviewing the
+printed source, destination, and collision state.
+
+Validate the checkout with:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+The demo and repository tests do not require Abaqus, an ODB, a license, or
+third-party Python packages.
 
 ## Skill catalog
 
@@ -36,15 +87,17 @@ agent, preserving the `SKILL.md` filename. See the [quickstart](docs/quickstart.
 for examples and the [selection matrix](docs/skill-selection.md) when several
 skills appear relevant.
 
-## Validate
+See the [demo guide](docs/demo.md) for the contract data flow, report schema,
+scenario details, and finding codes. See the [architecture](docs/architecture.md)
+for the boundary between static checks, optional solver evidence, physical
+review, and an engineering claim.
 
-```bash
-python -m unittest discover -s tests -v
-```
+## Contributing and citation
 
-The checks require Python 3.10 or newer and do not require Abaqus. See the
-[compatibility boundary](docs/compatibility.md) before porting a skill to a
-different Abaqus/CAE or embedded Python release.
+Please read [CONTRIBUTING](CONTRIBUTING.md) before opening an issue or pull
+request. Contributions must use synthetic or clean-room material and state what
+evidence was actually inspected. If this repository is useful in your work,
+please use the metadata in [CITATION.cff](CITATION.cff).
 
 ## Scope and independence
 
@@ -54,4 +107,8 @@ engineering review. Abaqus is a trademark of Dassault Systemes or its
 affiliates. This independent project is not affiliated with or endorsed by
 Dassault Systemes or SIMULIA.
 
-Licensed under Apache-2.0. See [NOTICE](NOTICE) and [CONTRIBUTING](CONTRIBUTING.md).
+The demo performs static contract checks only. A passing report does not mean
+that a solver completed, that an ODB was inspected, that the model is
+physically valid, or that an engineering claim is approved. Licensed under
+Apache-2.0. See [NOTICE](NOTICE), [CONTRIBUTING](CONTRIBUTING.md), and the
+[community launch guide](docs/community-launch.md).

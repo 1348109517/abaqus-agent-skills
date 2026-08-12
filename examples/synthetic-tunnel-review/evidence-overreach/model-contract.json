@@ -1,0 +1,138 @@
+{
+  "boundary_conditions": [
+    {
+      "name": "FarFieldFix",
+      "region": "FarField",
+      "step": "Initial"
+    }
+  ],
+  "evidence": {
+    "engineering_claim": "approved",
+    "physical_review": "required",
+    "solver": "not_run",
+    "static_review": "complete"
+  },
+  "interactions": [
+    {
+      "main": "LiningOuter",
+      "name": "SoilLining",
+      "secondary": "TunnelFace"
+    }
+  ],
+  "loads": [
+    {
+      "name": "Gravity",
+      "region": "SoilVolume",
+      "step": "Excavation"
+    }
+  ],
+  "materials": [
+    {
+      "name": "SyntheticSoil"
+    },
+    {
+      "name": "SyntheticLining"
+    }
+  ],
+  "mesh_intents": [
+    {
+      "element_family": "continuum",
+      "part": "Soil"
+    },
+    {
+      "element_family": "continuum",
+      "part": "Lining"
+    }
+  ],
+  "model": {
+    "instances": [
+      {
+        "name": "Soil-1",
+        "part": "Soil"
+      },
+      {
+        "name": "Lining-1",
+        "part": "Lining"
+      }
+    ],
+    "name": "SyntheticTunnelReview",
+    "parts": [
+      {
+        "name": "Soil"
+      },
+      {
+        "name": "Lining"
+      }
+    ],
+    "sets": [
+      {
+        "instance": "Soil-1",
+        "name": "FarField"
+      },
+      {
+        "instance": "Soil-1",
+        "name": "SoilVolume"
+      }
+    ],
+    "surfaces": [
+      {
+        "instance": "Soil-1",
+        "name": "TunnelFace"
+      },
+      {
+        "instance": "Lining-1",
+        "name": "LiningOuter"
+      }
+    ]
+  },
+  "outputs": [
+    {
+      "kind": "field",
+      "name": "Displacement",
+      "variables": [
+        "U"
+      ]
+    },
+    {
+      "kind": "history",
+      "name": "Reaction",
+      "variables": [
+        "RF"
+      ]
+    }
+  ],
+  "review_intent": {
+    "requires_outputs": [
+      "Displacement",
+      "Reaction"
+    ]
+  },
+  "scenario_id": "evidence-overreach",
+  "schema_version": "1.0",
+  "sections": [
+    {
+      "material": "SyntheticSoil",
+      "name": "SoilSection",
+      "part": "Soil"
+    },
+    {
+      "material": "SyntheticLining",
+      "name": "LiningSection",
+      "part": "Lining"
+    }
+  ],
+  "steps": [
+    {
+      "name": "Initial",
+      "order": 0
+    },
+    {
+      "name": "Excavation",
+      "order": 1
+    }
+  ],
+  "units": {
+    "force": "N",
+    "length": "m"
+  }
+}

@@ -1,4 +1,5 @@
 import re
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -33,6 +34,7 @@ REQUIRED_HEADINGS = {
     "Acceptance checklist",
 }
 TEXT_SUFFIXES = {".md", ".py", ".yml", ".yaml", ".txt"}
+INTERNAL_SCRATCH_PARTS = frozenset({".superpowers"})
 SENSITIVE_PATTERNS = {
     "absolute Windows path": re.compile(r"(?i)(?<![A-Za-z])[C-Z]:[\\/]"),
     "email address": re.compile(r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}"),
@@ -41,9 +43,24 @@ SENSITIVE_PATTERNS = {
 }
 
 
-def text_files():
-    for path in ROOT.rglob("*"):
-        if path.is_file() and path.suffix.lower() in TEXT_SUFFIXES and ".git" not in path.parts:
+def is_internal_scratch(path: Path) -> bool:
+    return any(part.casefold() in INTERNAL_SCRATCH_PARTS for part in path.parts)
+
+
+def release_files(root: Path = ROOT):
+    for path in root.rglob("*"):
+        if (
+            path.is_file()
+            and ".git" not in path.parts
+            and "__pycache__" not in path.parts
+            and not is_internal_scratch(path)
+        ):
+            yield path
+
+
+def text_files(root: Path = ROOT):
+    for path in release_files(root):
+        if path.suffix.lower() in TEXT_SUFFIXES:
             yield path
 
 
@@ -82,20 +99,50 @@ class RepositoryContractTests(unittest.TestCase):
     def test_release_files_contain_no_sensitive_text(self):
         excluded = {ROOT / "tests" / "test_repository.py"}
         for path in text_files():
-            if path in excluded or "superpowers" in path.parts:
+            if path in excluded:
                 continue
             text = path.read_text(encoding="utf-8")
             for label, pattern in SENSITIVE_PATTERNS.items():
                 self.assertIsNone(pattern.search(text), f"{label} found in {path}")
 
+    def test_release_scan_is_self_contained_for_internal_scratch_paths(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            public_text = root / "README.md"
+            public_text.write_text("public", encoding="utf-8")
+            public_binary = root / "public.bin"
+            public_binary.write_bytes(b"\x00public")
+            (root / ".superpowers" / "scratch.md").parent.mkdir(parents=True)
+            (root / ".superpowers" / "scratch.md").write_text("scratch", encoding="utf-8")
+            (root / ".superpowers" / "scratch.bin").write_bytes(b"\x00scratch")
+            (root / "docs" / "superpowers" / "scratch.md").parent.mkdir(parents=True)
+            (root / "docs" / "superpowers" / "scratch.md").write_text("scratch", encoding="utf-8")
+            (root / "docs" / "superpowers" / "scratch.bin").write_bytes(b"\x00scratch")
+            (root / ".git" / "metadata.txt").parent.mkdir(parents=True)
+            (root / ".git" / "metadata.txt").write_text("internal", encoding="utf-8")
+            (root / "__pycache__" / "module.pyc").parent.mkdir(parents=True)
+            (root / "__pycache__" / "module.pyc").write_bytes(b"\x00internal")
+            release_paths = set(release_files(root))
+            text_paths = set(text_files(root))
+            self.assertEqual(
+                {
+                    public_text,
+                    public_binary,
+                    root / "docs" / "superpowers" / "scratch.md",
+                    root / "docs" / "superpowers" / "scratch.bin",
+                },
+                release_paths,
+            )
+            self.assertEqual(
+                {public_text, root / "docs" / "superpowers" / "scratch.md"},
+                text_paths,
+            )
+
     def test_no_large_or_binary_release_files(self):
-        for path in ROOT.rglob("*"):
-            if not path.is_file() or ".git" in path.parts or "__pycache__" in path.parts:
-                continue
+        for path in release_files():
             self.assertLessEqual(path.stat().st_size, 1024 * 1024, f"file exceeds 1 MiB: {path}")
-            if "superpowers" not in path.parts:
-                sample = path.read_bytes()[:4096]
-                self.assertNotIn(b"\x00", sample, f"binary file: {path}")
+            sample = path.read_bytes()[:4096]
+            self.assertNotIn(b"\x00", sample, f"binary file: {path}")
 
     def test_public_compatibility_contract_is_documented(self):
         compatibility = ROOT / "docs" / "compatibility.md"
