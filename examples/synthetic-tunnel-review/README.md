@@ -5,18 +5,16 @@ tunnel-and-soil model plan. They contain independently created synthetic names
 and values only; they do not require Abaqus/CAE, a solver, an ODB, or private
 model files.
 
-Run the complete scenario with the repository demo command:
+Run the committed scenario integration test from the repository root:
 
 ```text
-python scripts/run_demo.py --scenario complete
+python -m unittest tests.test_demo_scenarios -v
 ```
 
-The two teaching scenarios are available with the same command:
-
-```text
-python scripts/run_demo.py --scenario naming-drift
-python scripts/run_demo.py --scenario evidence-overreach
-```
+This test directly loads and audits `complete`, `naming-drift`, and
+`evidence-overreach`, then compares each actual non-PASS finding with its
+literal `expected-findings.json` file. A future one-command CLI may expose
+individual scenario selection; the focused test is the current runnable path.
 
 ## Scenarios
 
