@@ -1,4 +1,5 @@
 import re
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -46,14 +47,20 @@ def is_internal_scratch(path: Path) -> bool:
     return any(part.casefold() in INTERNAL_SCRATCH_PARTS for part in path.parts)
 
 
-def text_files():
-    for path in ROOT.rglob("*"):
+def release_files(root: Path = ROOT):
+    for path in root.rglob("*"):
         if (
             path.is_file()
-            and path.suffix.lower() in TEXT_SUFFIXES
             and ".git" not in path.parts
+            and "__pycache__" not in path.parts
             and not is_internal_scratch(path)
         ):
+            yield path
+
+
+def text_files(root: Path = ROOT):
+    for path in release_files(root):
+        if path.suffix.lower() in TEXT_SUFFIXES:
             yield path
 
 
@@ -98,27 +105,30 @@ class RepositoryContractTests(unittest.TestCase):
             for label, pattern in SENSITIVE_PATTERNS.items():
                 self.assertIsNone(pattern.search(text), f"{label} found in {path}")
 
-    def test_internal_scratch_paths_are_excluded_from_release_scans(self):
-        text_paths = set(text_files())
-        scratch_paths = {path for path in text_paths if ".superpowers" in path.parts}
-        self.assertFalse(scratch_paths, scratch_paths)
-        scratch_path = ROOT / ".superpowers" / "sdd" / "task-9-report.md"
-        legacy_scratch_path = ROOT / "superpowers" / "scratch.md"
-        public_path = ROOT / "README.md"
-        self.assertTrue(is_internal_scratch(scratch_path))
-        self.assertTrue(is_internal_scratch(legacy_scratch_path))
-        self.assertFalse(is_internal_scratch(public_path))
-        self.assertIn(public_path, text_paths)
+    def test_release_scan_is_self_contained_for_internal_scratch_paths(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            public_text = root / "README.md"
+            public_text.write_text("public", encoding="utf-8")
+            public_binary = root / "public.bin"
+            public_binary.write_bytes(b"\x00public")
+            (root / ".superpowers" / "scratch.md").parent.mkdir(parents=True)
+            (root / ".superpowers" / "scratch.md").write_text("scratch", encoding="utf-8")
+            (root / ".superpowers" / "scratch.bin").write_bytes(b"\x00scratch")
+            (root / "docs" / "superpowers" / "scratch.md").parent.mkdir(parents=True)
+            (root / "docs" / "superpowers" / "scratch.md").write_text("scratch", encoding="utf-8")
+            (root / "docs" / "superpowers" / "scratch.bin").write_bytes(b"\x00scratch")
+            (root / ".git" / "metadata.txt").parent.mkdir(parents=True)
+            (root / ".git" / "metadata.txt").write_text("internal", encoding="utf-8")
+            (root / "__pycache__" / "module.pyc").parent.mkdir(parents=True)
+            (root / "__pycache__" / "module.pyc").write_bytes(b"\x00internal")
+            release_paths = set(release_files(root))
+            text_paths = set(text_files(root))
+            self.assertEqual({public_text, public_binary}, release_paths)
+            self.assertEqual({public_text}, text_paths)
 
     def test_no_large_or_binary_release_files(self):
-        for path in ROOT.rglob("*"):
-            if (
-                not path.is_file()
-                or ".git" in path.parts
-                or "__pycache__" in path.parts
-                or is_internal_scratch(path)
-            ):
-                continue
+        for path in release_files():
             self.assertLessEqual(path.stat().st_size, 1024 * 1024, f"file exceeds 1 MiB: {path}")
             sample = path.read_bytes()[:4096]
             self.assertNotIn(b"\x00", sample, f"binary file: {path}")
