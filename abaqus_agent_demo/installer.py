@@ -23,7 +23,16 @@ def list_skills(skills_root: Path) -> tuple[str, ...]:
     """Return the public skill directory names in stable sorted order."""
 
     root = Path(skills_root)
-    return tuple(sorted(path.name for path in root.iterdir() if path.is_dir()))
+    return tuple(
+        sorted(
+            path.name
+            for path in root.iterdir()
+            if path.is_dir()
+            and not path.is_symlink()
+            and (path / "SKILL.md").is_file()
+            and not (path / "SKILL.md").is_symlink()
+        )
+    )
 
 
 def plan_install(

@@ -27,6 +27,42 @@ class SkillInstallerTests(unittest.TestCase):
         self.assertIn("abaqus-mesh", names)
         self.assertEqual(17, len(names))
 
+    def test_list_skills_ignores_decoy_directory_without_direct_skill_file(self):
+        from abaqus_agent_demo.installer import list_skills, plan_install
+
+        with TemporaryDirectory() as directory:
+            skills_root = Path(directory) / "skills"
+            skills_root.mkdir()
+            real_skill = skills_root / "real-skill"
+            real_skill.mkdir()
+            (real_skill / "SKILL.md").write_text("real", encoding="utf-8")
+            decoy = skills_root / "decoy"
+            decoy.mkdir()
+            (decoy / "README.md").write_text("not a skill", encoding="utf-8")
+
+            self.assertEqual(("real-skill",), list_skills(skills_root))
+            with self.assertRaisesRegex(ValueError, "unknown skill"):
+                plan_install(skills_root, "decoy", Path(directory) / "target")
+
+    def test_list_skills_ignores_symlinked_skill_directory_when_supported(self):
+        from abaqus_agent_demo.installer import list_skills, plan_install
+
+        with TemporaryDirectory() as directory:
+            skills_root = Path(directory) / "skills"
+            skills_root.mkdir()
+            real_skill = skills_root / "real-skill"
+            real_skill.mkdir()
+            (real_skill / "SKILL.md").write_text("real", encoding="utf-8")
+            linked_skill = skills_root / "linked-skill"
+            try:
+                linked_skill.symlink_to(real_skill, target_is_directory=True)
+            except (NotImplementedError, OSError) as error:
+                self.skipTest(f"symlink creation denied: {error}")
+
+            self.assertEqual(("real-skill",), list_skills(skills_root))
+            with self.assertRaisesRegex(ValueError, "unknown skill"):
+                plan_install(skills_root, "linked-skill", Path(directory) / "target")
+
     def test_plan_contains_explicit_paths_and_plan_time_collision(self):
         from abaqus_agent_demo.installer import plan_install
 
@@ -141,6 +177,19 @@ class SkillInstallerTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertIn("APPLIED", result.stdout)
             self.assertTrue((target / "abaqus-mesh" / "SKILL.md").is_file())
+
+    def test_cli_apply_failure_does_not_report_applied(self):
+        with TemporaryDirectory() as directory:
+            target = Path(directory) / "target"
+            target.write_text("target must be a directory", encoding="utf-8")
+            result = self.run_cli(
+                "abaqus-mesh", "--target", str(target), "--apply"
+            )
+            self.assertEqual(2, result.returncode)
+            self.assertIn("Source:", result.stdout)
+            self.assertIn("Destination:", result.stdout)
+            self.assertNotIn("APPLIED", result.stdout)
+            self.assertIn("error:", result.stderr)
 
     def test_cli_unknown_skill_returns_two_without_changes(self):
         with TemporaryDirectory() as directory:

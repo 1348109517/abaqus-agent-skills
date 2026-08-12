@@ -42,14 +42,17 @@ def main(argv=None) -> int:
 
     try:
         plan = plan_install(SKILLS_ROOT, args.skill_name, args.target)
-        mode = "APPLIED" if args.apply else "DRY RUN"
-        print(f"{mode}: {plan.skill_name}")
+        print(f"Plan: {plan.skill_name}")
         print(f"Source: {plan.source}")
         print(f"Destination: {plan.destination}")
-        execute_install(plan, apply=args.apply)
+        applied = execute_install(plan, apply=args.apply)
     except (ValueError, OSError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 2
+    if applied:
+        print(f"APPLIED: {plan.skill_name}")
+    else:
+        print(f"DRY RUN: {plan.skill_name}")
     return 0
 
 
