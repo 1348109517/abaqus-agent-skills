@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Field"
+  short_description: "Review initial conditions and predefined fields"
+  default_prompt: "Use $abaqus-field to handle a bounded Abaqus workflow request."

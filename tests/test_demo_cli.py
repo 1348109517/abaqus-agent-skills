@@ -34,7 +34,7 @@ class DemoCliTests(unittest.TestCase):
             self.assertTrue((Path(directory) / "report.md").is_file())
             self.assertIn("Scenario: complete", result.stdout)
             self.assertIn("Input:", result.stdout)
-            self.assertIn("PASS: 8", result.stdout)
+            self.assertIn("PASS: 10", result.stdout)
             self.assertIn("WARNING: 0", result.stdout)
             self.assertIn("REVIEW_REQUIRED: 0", result.stdout)
             self.assertIn(str(Path(directory) / "report.json"), result.stdout)
@@ -52,6 +52,15 @@ class DemoCliTests(unittest.TestCase):
             self.assertIn(NO_SOLVER_REMINDER, result.stdout)
             payload = json.loads((Path(directory) / "report.json").read_text())
             self.assertEqual(1, payload["summary"]["REVIEW_REQUIRED"])
+
+    def test_v11_review_scenarios_are_supported_by_demo_cli(self):
+        for scenario in ("staged-conflict", "mapped-load-gap"):
+            with self.subTest(scenario=scenario), TemporaryDirectory() as directory:
+                result = self.run_cli("--scenario", scenario, "--output-dir", directory)
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertIn(f"Scenario: {scenario}", result.stdout)
+                payload = json.loads((Path(directory) / "report.json").read_text())
+                self.assertGreater(payload["summary"]["REVIEW_REQUIRED"], 0)
 
     def test_invalid_contract_returns_two(self):
         with TemporaryDirectory() as directory:

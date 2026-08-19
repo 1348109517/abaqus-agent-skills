@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Mesh"
+  short_description: "Review elements, seeds, controls, and quality"
+  default_prompt: "Use $abaqus-mesh to handle a bounded Abaqus workflow request."

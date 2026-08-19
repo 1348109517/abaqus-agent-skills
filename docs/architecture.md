@@ -4,7 +4,7 @@ The repository is a documentation-first monorepo. Each `skills/<name>` folder
 is an independent capability with a small trigger description and a procedural
 body. Heavy detail is loaded only from a directly linked `references/` file.
 
-The v0.3.0 runnable layer is deliberately small. The synthetic contracts under
+The v0.4.0 runnable layer is deliberately small. The synthetic contracts under
 `examples/synthetic-tunnel-review/` are read by `abaqus_agent_demo.contract`,
 checked by `abaqus_agent_demo.checks`, and rendered by
 `abaqus_agent_demo.report`. The repository-root [demo command](../scripts/run_demo.py)
@@ -26,9 +26,11 @@ approved intent -> explicit inputs -> static review -> optional execution
 ```
 
 The demo stops after static review. Its `PASS` findings cover only declared
-contract shape, names, references, steps, mesh intent, output coverage, and
-the declared evidence gate. `REVIEW_REQUIRED` identifies a broken dependency
-or an evidence shortcut; `WARNING` identifies incomplete static information.
+contract shape, names, references, steps, mesh intent, output coverage, the
+declared evidence gate, and the optional schema-1.1 staged-construction and
+mapped-load provenance sections when present. `REVIEW_REQUIRED` identifies a
+broken dependency, staged conflict, mapping gap, or evidence shortcut;
+`WARNING` identifies incomplete static information.
 Neither status is a solver or physics result.
 
 Passing an earlier stage never implies that a later stage passed. In

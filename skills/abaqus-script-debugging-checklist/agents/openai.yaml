@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Script Debugging Checklist"
+  short_description: "Diagnose reproducible Abaqus scripting failures"
+  default_prompt: "Use $abaqus-script-debugging-checklist to handle a bounded Abaqus workflow request."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Staged Construction Auditor"
+  short_description: "Audit staged activation and removal events"
+  default_prompt: "Use $abaqus-staged-construction-auditor to handle a bounded Abaqus workflow request."

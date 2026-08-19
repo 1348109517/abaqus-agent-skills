@@ -12,7 +12,13 @@ ROOT = Path(__file__).resolve().parents[1]
 class ScenarioIntegrationTests(unittest.TestCase):
     def test_scenarios_match_expected_non_pass_findings(self):
         root = ROOT / "examples" / "synthetic-tunnel-review"
-        for name in ("complete", "naming-drift", "evidence-overreach"):
+        for name in (
+            "complete",
+            "naming-drift",
+            "evidence-overreach",
+            "staged-conflict",
+            "mapped-load-gap",
+        ):
             with self.subTest(scenario=name):
                 contract = load_contract(root / name / "model-contract.json")
                 expected = json.loads(

@@ -1,0 +1,14 @@
+{
+  "non_pass": [
+    {
+      "code": "C-STAGE-001",
+      "status": "REVIEW_REQUIRED",
+      "location": "construction_events.ActivateLining.conflict"
+    },
+    {
+      "code": "C-STAGE-001",
+      "status": "REVIEW_REQUIRED",
+      "location": "construction_events.DeactivateLining.conflict"
+    }
+  ]
+}

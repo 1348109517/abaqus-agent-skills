@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Geometry"
+  short_description: "Review parts, instances, sets, and partitions"
+  default_prompt: "Use $abaqus-geometry to handle a bounded Abaqus workflow request."

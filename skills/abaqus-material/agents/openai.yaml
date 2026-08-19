@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Material"
+  short_description: "Review materials, sections, units, and sources"
+  default_prompt: "Use $abaqus-material to handle a bounded Abaqus workflow request."

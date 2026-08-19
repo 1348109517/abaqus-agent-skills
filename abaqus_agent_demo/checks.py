@@ -5,9 +5,14 @@ contract.  They do not load Abaqus, run a solver, or infer physical results.
 """
 
 from collections.abc import Mapping
+import re
 from typing import Any
 
 from .findings import Finding
+
+
+_SUPPORTED_SCHEMA_VERSIONS = frozenset({"1.0", "1.1"})
+_OPTIONAL_SCHEMA_FIELDS = ("construction_events", "mapped_loads")
 
 
 def finding(code, status, message, location, skill, next_action):
@@ -114,6 +119,34 @@ def check_contract_shape(contract: Mapping[str, Any]):
     problems = []
     for key in ("schema_version", "scenario_id"):
         _check_nonempty_string(problems, contract.get(key), key, skill, next_action)
+    schema_version = contract.get("schema_version")
+    if (
+        isinstance(schema_version, str)
+        and schema_version.strip()
+        and schema_version not in _SUPPORTED_SCHEMA_VERSIONS
+    ):
+        problems.append(
+            finding(
+                "C-CONTRACT-001",
+                "REVIEW_REQUIRED",
+                "Contract field schema_version must be 1.0 or 1.1.",
+                "schema_version",
+                skill,
+                next_action,
+            )
+        )
+    for key in _OPTIONAL_SCHEMA_FIELDS:
+        if key in contract and schema_version != "1.1":
+            problems.append(
+                finding(
+                    "C-CONTRACT-001",
+                    "REVIEW_REQUIRED",
+                    f"Contract field {key} requires schema_version 1.1.",
+                    key,
+                    skill,
+                    next_action,
+                )
+            )
 
     top_level_types = {
         "units": Mapping,
@@ -131,6 +164,9 @@ def check_contract_shape(contract: Mapping[str, Any]):
     }
     for key in sorted(top_level_types):
         _check_type(problems, contract, (key,), (top_level_types[key],), skill, next_action)
+    for key in _OPTIONAL_SCHEMA_FIELDS:
+        if key in contract:
+            _check_type(problems, contract, (key,), (list,), skill, next_action)
 
     model = contract.get("model")
     if isinstance(model, Mapping):
@@ -180,6 +216,8 @@ def check_contract_shape(contract: Mapping[str, Any]):
         ("steps",),
         ("boundary_conditions",),
         ("loads",),
+        ("construction_events",),
+        ("mapped_loads",),
         ("interactions",),
         ("mesh_intents",),
         ("outputs",),
@@ -735,6 +773,345 @@ def check_evidence_boundary(contract):
     ]
 
 
+_CONSTRUCTION_ACTIONS = frozenset({"activate", "deactivate"})
+_MAPPED_COUNT_FIELDS = (
+    "expected_face_count",
+    "mapped_face_count",
+    "duplicate_face_count",
+    "unmapped_face_count",
+)
+_MAPPED_TEXT_FIELDS = (
+    "source_id",
+    "coordinate_system",
+    "source_units",
+    "target_units",
+    "sign_convention",
+)
+
+
+def _optional_problem(code, message, location, skill, next_action):
+    return finding(code, "REVIEW_REQUIRED", message, location, skill, next_action)
+
+
+def _optional_name(item):
+    return _item_name(item)
+
+
+def _declared_sets_and_steps(contract):
+    model = contract.get("model", {}) if isinstance(contract, Mapping) else {}
+    if not isinstance(model, Mapping):
+        model = {}
+    regions = declared_names(model.get("sets", []))
+    steps = declared_names(contract.get("steps", []))
+    return regions, steps
+
+
+def _valid_nonempty_string(value):
+    return isinstance(value, str) and bool(value.strip())
+
+
+def check_staged_construction(contract):
+    """Check optional construction activation/deactivation events."""
+
+    events = _items(contract, ("construction_events",))
+    regions, steps = _declared_sets_and_steps(contract)
+    problems = []
+    names = {}
+    event_keys = {}
+    skill = "abaqus-staged-construction-auditor"
+    next_action = "Reconcile the staged construction event before model execution."
+    if not events:
+        return [
+            _optional_problem(
+                "C-STAGE-001",
+                "construction_events is present but contains no events.",
+                "construction_events",
+                skill,
+                next_action,
+            )
+        ]
+
+    for item in events:
+        name = _optional_name(item)
+        prefix = f"construction_events.{name}"
+        if not _valid_nonempty_string(item.get("name") if isinstance(item, Mapping) else None):
+            problems.append(
+                _optional_problem(
+                    "C-STAGE-001",
+                    "Construction event must have a non-empty name.",
+                    f"{prefix}.name",
+                    skill,
+                    next_action,
+                )
+            )
+        elif name in names:
+            problems.append(
+                _optional_problem(
+                    "C-STAGE-001",
+                    f"Construction event name {name!r} is duplicated.",
+                    f"{prefix}.name",
+                    skill,
+                    next_action,
+                )
+            )
+        else:
+            names[name] = prefix
+
+        action = item.get("action") if isinstance(item, Mapping) else None
+        if action not in _CONSTRUCTION_ACTIONS:
+            problems.append(
+                _optional_problem(
+                    "C-STAGE-001",
+                    "Construction event action must be activate or deactivate.",
+                    f"{prefix}.action",
+                    skill,
+                    next_action,
+                )
+            )
+
+        region = item.get("region") if isinstance(item, Mapping) else None
+        if not _valid_nonempty_string(region):
+            problems.append(
+                _optional_problem(
+                    "C-STAGE-001",
+                    "Construction event region must be a non-empty declared region.",
+                    f"{prefix}.region",
+                    skill,
+                    next_action,
+                )
+            )
+        elif region not in regions:
+            problems.append(
+                _optional_problem(
+                    "C-STAGE-001",
+                    f"Construction event {name} references undeclared region {region!r}.",
+                    f"{prefix}.region",
+                    skill,
+                    next_action,
+                )
+            )
+
+        step = item.get("step") if isinstance(item, Mapping) else None
+        if not _valid_nonempty_string(step):
+            problems.append(
+                _optional_problem(
+                    "C-STAGE-001",
+                    "Construction event step must be a non-empty declared step.",
+                    f"{prefix}.step",
+                    skill,
+                    next_action,
+                )
+            )
+        elif step not in steps:
+            problems.append(
+                _optional_problem(
+                    "C-STAGE-001",
+                    f"Construction event {name} references undeclared step {step!r}.",
+                    f"{prefix}.step",
+                    skill,
+                    next_action,
+                )
+            )
+
+        if _valid_nonempty_string(region) and _valid_nonempty_string(step) and action in _CONSTRUCTION_ACTIONS:
+            event_keys.setdefault((region, step), []).append((action, name, prefix))
+
+    for (region, step), entries in event_keys.items():
+        if len(entries) > 1:
+            for action, name, prefix in sorted(entries, key=lambda value: value[1]):
+                problems.append(
+                    _optional_problem(
+                        "C-STAGE-001",
+                        f"Construction events conflict for region {region!r} in step {step!r}: multiple events are declared.",
+                        f"{prefix}.conflict",
+                        skill,
+                        next_action,
+                    )
+                )
+
+    if problems:
+        return sorted(problems, key=lambda item: (item.location, item.message))
+    return [
+        finding(
+            "C-STAGE-001",
+            "PASS",
+            "Construction activation and deactivation events are valid and non-conflicting.",
+            "construction_events",
+            skill,
+            "Preserve the reviewed event sequence through model generation.",
+        )
+    ]
+
+
+def check_mapped_load_provenance(contract):
+    """Check optional face-mapped load provenance and mapping counts."""
+
+    mapped_loads = _items(contract, ("mapped_loads",))
+    _, steps = _declared_sets_and_steps(contract)
+    model = contract.get("model", {}) if isinstance(contract, Mapping) else {}
+    surfaces = declared_names(model.get("surfaces", [])) if isinstance(model, Mapping) else set()
+    problems = []
+    names = {}
+    skill = "abaqus-mapped-load-provenance-auditor"
+    next_action = "Repair mapped-load provenance or mapping counts before using the load."
+    if not mapped_loads:
+        return [
+            _optional_problem(
+                "C-MAPLOAD-001",
+                "mapped_loads is present but contains no mapped loads.",
+                "mapped_loads",
+                skill,
+                next_action,
+            )
+        ]
+
+    for item in mapped_loads:
+        name = _optional_name(item)
+        prefix = f"mapped_loads.{name}"
+        if not _valid_nonempty_string(item.get("name") if isinstance(item, Mapping) else None):
+            problems.append(
+                _optional_problem(
+                    "C-MAPLOAD-001",
+                    "Mapped load must have a non-empty name.",
+                    f"{prefix}.name",
+                    skill,
+                    next_action,
+                )
+            )
+        elif name in names:
+            problems.append(
+                _optional_problem(
+                    "C-MAPLOAD-001",
+                    f"Mapped load name {name!r} conflicts with another declared load.",
+                    f"{prefix}.name",
+                    skill,
+                    next_action,
+                )
+            )
+        else:
+            names[name] = prefix
+
+        target_surface = item.get("target_surface") if isinstance(item, Mapping) else None
+        if not _valid_nonempty_string(target_surface):
+            problems.append(
+                _optional_problem(
+                    "C-MAPLOAD-001",
+                    "Mapped load target_surface must be a non-empty declared surface.",
+                    f"{prefix}.target_surface",
+                    skill,
+                    next_action,
+                )
+            )
+        elif target_surface not in surfaces:
+            problems.append(
+                _optional_problem(
+                    "C-MAPLOAD-001",
+                    f"Mapped load {name} references undeclared target surface {target_surface!r}.",
+                    f"{prefix}.target_surface",
+                    skill,
+                    next_action,
+                )
+            )
+
+        step = item.get("step") if isinstance(item, Mapping) else None
+        if not _valid_nonempty_string(step):
+            problems.append(
+                _optional_problem(
+                    "C-MAPLOAD-001",
+                    "Mapped load step must be a non-empty declared step.",
+                    f"{prefix}.step",
+                    skill,
+                    next_action,
+                )
+            )
+        elif step not in steps:
+            problems.append(
+                _optional_problem(
+                    "C-MAPLOAD-001",
+                    f"Mapped load {name} references undeclared step {step!r}.",
+                    f"{prefix}.step",
+                    skill,
+                    next_action,
+                )
+            )
+
+        for field in _MAPPED_TEXT_FIELDS:
+            value = item.get(field) if isinstance(item, Mapping) else None
+            if not _valid_nonempty_string(value):
+                problems.append(
+                    _optional_problem(
+                        "C-MAPLOAD-001",
+                        f"Mapped load field {field} must be a non-empty string.",
+                        f"{prefix}.{field}",
+                        skill,
+                        next_action,
+                    )
+                )
+
+        digest = item.get("source_sha256") if isinstance(item, Mapping) else None
+        if not isinstance(digest, str) or re.fullmatch(r"[0-9a-fA-F]{64}", digest) is None:
+            problems.append(
+                _optional_problem(
+                    "C-MAPLOAD-001",
+                    "Mapped load source_sha256 must be exactly 64 hexadecimal characters.",
+                    f"{prefix}.source_sha256",
+                    skill,
+                    next_action,
+                )
+            )
+
+        counts = {}
+        valid_counts = True
+        for field in _MAPPED_COUNT_FIELDS:
+            value = item.get(field) if isinstance(item, Mapping) else None
+            if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+                valid_counts = False
+                problems.append(
+                    _optional_problem(
+                        "C-MAPLOAD-001",
+                        f"Mapped load count {field} must be a nonnegative integer.",
+                        f"{prefix}.{field}",
+                        skill,
+                        next_action,
+                    )
+                )
+            else:
+                counts[field] = value
+        if valid_counts and counts["duplicate_face_count"] != 0:
+            problems.append(
+                _optional_problem(
+                    "C-MAPLOAD-001",
+                    "Mapped load duplicate_face_count must be zero.",
+                    f"{prefix}.duplicate_face_count",
+                    skill,
+                    next_action,
+                )
+            )
+        if valid_counts and counts["mapped_face_count"] + counts["unmapped_face_count"] != counts["expected_face_count"]:
+            problems.append(
+                _optional_problem(
+                    "C-MAPLOAD-001",
+                    "Mapped and unmapped face counts must sum to expected_face_count.",
+                    f"{prefix}.face_counts",
+                    skill,
+                    next_action,
+                )
+            )
+
+    if problems:
+        return sorted(problems, key=lambda item: (item.location, item.message))
+    return [
+        finding(
+            "C-MAPLOAD-001",
+            "PASS",
+            "Mapped-load provenance, references, digest, and face counts are consistent.",
+            "mapped_loads",
+            skill,
+            "Preserve the source digest and mapping counts through load generation and review.",
+        )
+    ]
+
+
 CHECKS = (
     check_units,
     check_unique_names,
@@ -753,4 +1130,8 @@ def audit_contract(contract: Mapping[str, Any]) -> tuple[Finding, ...]:
     findings = list(shape_findings)
     for check in CHECKS:
         findings.extend(sorted(check(contract), key=lambda item: (item.location, item.code)))
+    if "construction_events" in contract:
+        findings.extend(sorted(check_staged_construction(contract), key=lambda item: (item.location, item.code)))
+    if "mapped_loads" in contract:
+        findings.extend(sorted(check_mapped_load_provenance(contract), key=lambda item: (item.location, item.code)))
     return tuple(findings)

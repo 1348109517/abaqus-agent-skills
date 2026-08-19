@@ -19,6 +19,14 @@
       "secondary": "TunnelFace"
     }
   ],
+  "construction_events": [
+    {
+      "action": "activate",
+      "name": "ActivateLining",
+      "region": "LiningVolume",
+      "step": "Excavation"
+    }
+  ],
   "loads": [
     {
       "name": "Gravity",
@@ -42,6 +50,23 @@
     {
       "element_family": "continuum",
       "part": "Lining"
+    }
+  ],
+  "mapped_loads": [
+    {
+      "coordinate_system": "global",
+      "duplicate_face_count": 0,
+      "expected_face_count": 4,
+      "mapped_face_count": 4,
+      "name": "MappedFacePressure",
+      "sign_convention": "positive-outward",
+      "source_id": "synthetic-source-1",
+      "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "source_units": "kPa",
+      "step": "Excavation",
+      "target_surface": "TunnelFace",
+      "target_units": "kPa",
+      "unmapped_face_count": 0
     }
   ],
   "model": {
@@ -72,6 +97,10 @@
       {
         "instance": "Soil-1",
         "name": "SoilVolume"
+      },
+      {
+        "instance": "Lining-1",
+        "name": "LiningVolume"
       }
     ],
     "surfaces": [
@@ -108,7 +137,7 @@
     ]
   },
   "scenario_id": "complete",
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "sections": [
     {
       "material": "SyntheticSoil",

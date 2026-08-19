@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Step"
+  short_description: "Review procedures, increments, and step order"
+  default_prompt: "Use $abaqus-step to handle a bounded Abaqus workflow request."

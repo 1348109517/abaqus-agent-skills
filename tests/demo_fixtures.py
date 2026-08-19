@@ -1,3 +1,6 @@
+import copy
+
+
 def complete_contract():
     return {
         "schema_version": "1.0",
@@ -48,3 +51,37 @@ def complete_contract():
             "engineering_claim": "blocked",
         },
     }
+
+
+def complete_v11_contract():
+    contract = copy.deepcopy(complete_contract())
+    contract["schema_version"] = "1.1"
+    contract["model"]["sets"].append(
+        {"name": "LiningVolume", "instance": "Lining-1"}
+    )
+    contract["construction_events"] = [
+        {
+            "name": "ActivateLining",
+            "action": "activate",
+            "region": "LiningVolume",
+            "step": "Excavation",
+        }
+    ]
+    contract["mapped_loads"] = [
+        {
+            "name": "MappedFacePressure",
+            "target_surface": "TunnelFace",
+            "step": "Excavation",
+            "source_id": "synthetic-source-1",
+            "source_sha256": "a" * 64,
+            "coordinate_system": "global",
+            "source_units": "kPa",
+            "target_units": "kPa",
+            "sign_convention": "positive-outward",
+            "expected_face_count": 4,
+            "mapped_face_count": 4,
+            "duplicate_face_count": 0,
+            "unmapped_face_count": 0,
+        }
+    ]
+    return contract

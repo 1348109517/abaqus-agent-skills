@@ -2,7 +2,7 @@
 
 [English](README.md) · [快速开始](docs/quickstart.md) · [演示指南](docs/demo.md) · [技能选择](docs/skill-selection.md) · [兼容性边界](docs/compatibility.md)
 
-这是一个面向 AI 编码代理的 Abaqus 自动化工作流集合，当前包含 17 个可独立使用的
+这是一个面向 AI 编码代理的 Abaqus 自动化工作流集合，当前包含 19 个可独立使用的
 skills。项目强调输入可追溯、命名一致、先诊断后修改，以及明确区分“求解器完成”和
 “工程结论成立”。
 
@@ -27,17 +27,21 @@ build/demo/complete/report.json
 build/demo/complete/report.md
 ```
 
-也可以显式选择三个场景名称：
+也可以显式选择五个场景名称：
 
 ```bash
 python scripts/run_demo.py --scenario complete
 python scripts/run_demo.py --scenario naming-drift
 python scripts/run_demo.py --scenario evidence-overreach
+python scripts/run_demo.py --scenario staged-conflict
+python scripts/run_demo.py --scenario mapped-load-gap
 ```
 
-`complete` 场景有 8 项静态检查通过；`naming-drift` 报告未解析的区域引用；
+schema 1.1 的 `complete` 场景有 10 项静态检查通过，包含施工阶段和映射荷载溯源检查；
+`naming-drift` 报告未解析的区域引用；
 `evidence-overreach` 报告跳过求解器证据或物理审查的工程声明。后两个仍是已完成的
-静态审计，虽然包含 `REVIEW_REQUIRED`，仍会以状态码 0 结束。
+静态审计；`staged-conflict` 和 `mapped-load-gap` 展示新增 finding。所有场景虽然包含
+`REVIEW_REQUIRED`，仍会以状态码 0 结束。
 
 如需预览技能安装而不复制文件：
 
@@ -56,11 +60,19 @@ python -m unittest discover -s tests -v
 
 演示和代码库测试不需要 Abaqus、ODB、许可证或第三方 Python 包。
 
+## 证据交接
+
+确定性的 `report.json` 可使用已发布的
+[Engineering Evidence Toolkit v0.2.0](https://github.com/1348109517/engineering-evidence-toolkit/releases/tag/v0.2.0)
+转换为 evidence-contract 0.2。该适配器记录静态审计及来源摘要，并继续对求解器生命周期
+和物理审查状态设门，不会把静态报告提升为工程结论。
+
 ## 内容
 
 - 项目脚手架、依赖预检、共享命名清单和脚本调试；
 - 隧道局部网格拓扑与映射检查；
 - 边界条件、荷载、材料、分析步和 ODB 只读检查；
+- schema 1.1 施工阶段事件与映射荷载溯源检查；
 - API 文档核验、几何、网格、接触/约束、初始场、输出和受控导出；
 - 双语总览、选择矩阵、示例、贡献规范和自动验证。
 

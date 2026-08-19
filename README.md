@@ -2,7 +2,7 @@
 
 [中文说明](README.zh-CN.md) · [Quickstart](docs/quickstart.md) · [Demo guide](docs/demo.md) · [Choose a skill](docs/skill-selection.md) · [Compatibility](docs/compatibility.md)
 
-Seventeen reusable workflow skills for AI coding agents that help plan, review, and
+Nineteen reusable workflow skills for AI coding agents that help plan, review, and
 audit Abaqus automation. The collection focuses on traceable inputs, stable
 naming, diagnosis-first debugging, and an explicit boundary between a solver
 run and engineering validation.
@@ -30,19 +30,23 @@ build/demo/complete/report.json
 build/demo/complete/report.md
 ```
 
-The three scenario names can also be selected explicitly:
+The five scenario names can also be selected explicitly:
 
 ```bash
 python scripts/run_demo.py --scenario complete
 python scripts/run_demo.py --scenario naming-drift
 python scripts/run_demo.py --scenario evidence-overreach
+python scripts/run_demo.py --scenario staged-conflict
+python scripts/run_demo.py --scenario mapped-load-gap
 ```
 
-The `complete` scenario has eight static passes. `naming-drift` identifies an
+The schema-1.1 `complete` scenario has ten static passes, including staged
+construction and mapped-load provenance checks. `naming-drift` identifies an
 unresolved region reference, and `evidence-overreach` identifies an engineering
-claim that skips solver evidence or physical review. The latter two are
-completed static audits and intentionally return exit status 0 while recording
-`REVIEW_REQUIRED` findings.
+claim that skips solver evidence or physical review. `staged-conflict` and
+`mapped-load-gap` demonstrate the two new dedicated findings. These scenarios
+are completed static audits and intentionally return exit status 0 while
+recording `REVIEW_REQUIRED` findings.
 
 To preview a skill installation without copying files:
 
@@ -62,6 +66,15 @@ python -m unittest discover -s tests -v
 The demo and repository tests do not require Abaqus, an ODB, a license, or
 third-party Python packages.
 
+## Evidence handoff
+
+The deterministic `report.json` can be converted into an evidence-contract
+0.2 handoff with the stable
+[Engineering Evidence Toolkit v0.2.0](https://github.com/1348109517/engineering-evidence-toolkit/releases/tag/v0.2.0).
+That adapter records a static audit and its source digests; it deliberately
+keeps solver and physical-review lifecycle states gated rather than turning a
+static report into an engineering conclusion.
+
 ## Skill catalog
 
 | Skill | Use it for |
@@ -73,6 +86,8 @@ third-party Python packages.
 | `abaqus-tunnel-local-mesh-rebuilder` | Repairing tunnel-neighborhood topology and mapping |
 | `abaqus-bc` | Reviewing supports, symmetry, and prescribed fields |
 | `abaqus-load` | Reviewing forces, pressures, gravity, and amplitudes |
+| `abaqus-staged-construction-auditor` | Auditing schema-1.1 construction activation and deactivation events |
+| `abaqus-mapped-load-provenance-auditor` | Auditing mapped-load source provenance and face counts |
 | `abaqus-material` | Reviewing traceable material and section definitions |
 | `abaqus-step` | Reviewing procedures, increments, and step sequences |
 | `abaqus-odb` | Inspecting result databases without modifying them |
@@ -91,7 +106,7 @@ agent, preserving the `SKILL.md` filename. See the [quickstart](docs/quickstart.
 for examples and the [selection matrix](docs/skill-selection.md) when several
 skills appear relevant.
 
-See the [demo guide](docs/demo.md) for the contract data flow, report schema,
+See the [demo guide](docs/demo.md) for the schema-1.1 contract data flow, report schema,
 scenario details, and finding codes. See the [architecture](docs/architecture.md)
 for the boundary between static checks, optional solver evidence, physical
 review, and an engineering claim.

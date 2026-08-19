@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Interaction"
+  short_description: "Review contacts, ties, couplings, and connectors"
+  default_prompt: "Use $abaqus-interaction to handle a bounded Abaqus workflow request."
