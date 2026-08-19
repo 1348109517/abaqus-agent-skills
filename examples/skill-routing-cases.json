@@ -1,0 +1,233 @@
+{
+  "skills": {
+    "abaqus-bc": {
+      "positive": [
+        "Review whether the far-field supports and symmetry constraints are consistent.",
+        "Audit a prescribed displacement boundary condition and its activation step.",
+        "Check whether a pore-pressure boundary condition is declared on the intended set."
+      ],
+      "negative": [
+        "Verify the provenance digest and face counts of a mapped pressure source.",
+        "Diagnose why a contact pair has the wrong secondary surface."
+      ]
+    },
+    "abaqus-dependency-preflight-validator": {
+      "positive": [
+        "Find cross-file drift between part, instance, set, surface, and step names.",
+        "Preflight a multi-script model contract for unresolved consumer references.",
+        "Audit whether renamed regions remain consistent across generated artifacts."
+      ],
+      "negative": [
+        "Review the sign convention and resultant of an ordinary pressure load.",
+        "Extract history output from a read-only result database."
+      ]
+    },
+    "abaqus-docs": {
+      "positive": [
+        "Check whether an Abaqus API argument is available in the target release.",
+        "Verify the signature and module location of a release-sensitive symbol.",
+        "Compare an abqpy type hint with the installed Abaqus documentation boundary."
+      ],
+      "negative": [
+        "Audit a construction event set-step conflict in a model contract.",
+        "Check mapped face counts against a source digest."
+      ]
+    },
+    "abaqus-export": {
+      "positive": [
+        "Plan an approved export of a geometry subset with provenance and rollback.",
+        "Audit whether a result image leaving the model has a traceable source.",
+        "Design a dry-run export manifest for a selected mesh and named region."
+      ],
+      "negative": [
+        "Determine whether a pressure direction and amplitude are correct.",
+        "Review ordinary analysis-step increment controls."
+      ]
+    },
+    "abaqus-field": {
+      "positive": [
+        "Review an initial temperature field and its declared spatial region.",
+        "Audit a predefined pore-pressure field before model generation.",
+        "Check the step history and provenance of an initial stress field."
+      ],
+      "negative": [
+        "Choose field output variables for an engineering claim.",
+        "Resolve a duplicate name between two model scripts."
+      ]
+    },
+    "abaqus-geometry": {
+      "positive": [
+        "Review parts, partitions, instances, sets, and surfaces in a model plan.",
+        "Diagnose why a partition invalidates a named geometry region.",
+        "Plan a geometry change while preserving instance and surface references."
+      ],
+      "negative": [
+        "Verify mapped-load source units and face-count consistency.",
+        "Design a history output request for reaction forces."
+      ]
+    },
+    "abaqus-interaction": {
+      "positive": [
+        "Review contact surfaces, friction, and separation behavior.",
+        "Audit a tie or coupling constraint and its named regions.",
+        "Diagnose a connector interaction that references the wrong surface."
+      ],
+      "negative": [
+        "Check the SHA-256 digest of a mapped load source.",
+        "Set the minimum increment for a nonlinear analysis procedure."
+      ]
+    },
+    "abaqus-load": {
+      "positive": [
+        "Audit the magnitude, direction, sign, amplitude, and resultant of a pressure.",
+        "Review whether gravity is applied to the correct region and step.",
+        "Check the units and coordinate system of an ordinary traction load."
+      ],
+      "negative": [
+        "Audit mapped_loads provenance, digest, and face-count fields.",
+        "Check whether construction_events contains repeated set-step events."
+      ]
+    },
+    "abaqus-material": {
+      "positive": [
+        "Review density, elasticity, and plasticity declarations for a material.",
+        "Audit material and section provenance before assigning them to a part.",
+        "Check whether constitutive parameters have units and approved sources."
+      ],
+      "negative": [
+        "Diagnose a contact tie constraint between two surfaces.",
+        "Verify the step order and increment controls."
+      ]
+    },
+    "abaqus-mesh": {
+      "positive": [
+        "Review element families, seeds, mesh controls, and quality limits.",
+        "Audit whether interface divisions support compatible mapping.",
+        "Plan a bounded mesh refinement with deterministic quality evidence."
+      ],
+      "negative": [
+        "Review the sign convention of an applied moment.",
+        "Verify the release-specific signature of a mesh API call."
+      ]
+    },
+    "abaqus-mapped-load-provenance-auditor": {
+      "positive": [
+        "Audit mapped_loads source_sha256, units, signs, and face counts.",
+        "Check whether a mapped source resolves to its target surface and step.",
+        "Review a mapping gap with duplicate and unmapped face counts."
+      ],
+      "negative": [
+        "Choose the amplitude and direction for an ordinary pressure load.",
+        "Select field and history output variables for an ODB review."
+      ]
+    },
+    "abaqus-odb": {
+      "positive": [
+        "Inspect steps, frames, fields, and history data without changing an ODB.",
+        "Extract a read-only displacement field for a declared review output.",
+        "Audit whether an ODB contains the expected reaction history region."
+      ],
+      "negative": [
+        "Validate a model contract before generating an input deck.",
+        "Check source digest and face-count provenance before mapping a load."
+      ]
+    },
+    "abaqus-output": {
+      "positive": [
+        "Design field and history output variables for a claim-driven review.",
+        "Audit output regions, sampling frequency, and required response evidence.",
+        "Check whether review_intent requires an undeclared output request."
+      ],
+      "negative": [
+        "Verify the provenance and digest of a mapped-load source.",
+        "Repair a tunnel-neighborhood mesh topology."
+      ]
+    },
+    "abaqus-parametric-project-starter": {
+      "positive": [
+        "Start a maintainable multi-file Abaqus scripting project with a contract.",
+        "Define project inputs, naming, units, and dry-run boundaries before coding.",
+        "Create a clean-room parametric model scaffold with reviewable stages."
+      ],
+      "negative": [
+        "Verify one release-specific API signature.",
+        "Extract a field value from an existing ODB."
+      ]
+    },
+    "abaqus-script-debugging-checklist": {
+      "positive": [
+        "Diagnose a traceback caused by an empty region in a scripting run.",
+        "Investigate a job-build failure while preserving logs and the source state.",
+        "Review a reproducible script failure before proposing a reversible fix."
+      ],
+      "negative": [
+        "Audit a valid mapped-load contract for provenance completeness.",
+        "Review ordinary field output variable selection."
+      ]
+    },
+    "abaqus-shared-naming-manifest-builder": {
+      "positive": [
+        "Build one shared naming manifest for parts, instances, sets, and steps.",
+        "Resolve duplicate model names before generating multiple scripts.",
+        "Define stable names for surfaces and outputs across workflow stages."
+      ],
+      "negative": [
+        "Check whether an analysis procedure converged.",
+        "Validate mapped and unmapped face counts."
+      ]
+    },
+    "abaqus-staged-construction-auditor": {
+      "positive": [
+        "Audit construction_events activation and deactivation for declared model sets.",
+        "Find repeated set-step events in a schema-1.1 staged construction contract.",
+        "Report C-STAGE-001 for an invalid staged action or unresolved construction step."
+      ],
+      "negative": [
+        "Tune ordinary analysis-step increments and stabilization settings.",
+        "Review the magnitude and normal direction of a pressure load."
+      ]
+    },
+    "abaqus-step": {
+      "positive": [
+        "Review procedure choice, increment controls, stabilization, and restart order.",
+        "Audit an ordinary analysis sequence and its time or increment meaning.",
+        "Diagnose convergence controls without changing the physical claim."
+      ],
+      "negative": [
+        "Check repeated construction_events for one model set and step.",
+        "Verify mapped-load source digest and face counts."
+      ]
+    },
+    "abaqus-tunnel-local-mesh-rebuilder": {
+      "positive": [
+        "Repair asymmetric tunnel-neighborhood partition topology and mesh mapping.",
+        "Plan a local radial and circumferential mesh rebuild around a lining.",
+        "Audit a flower-like tunnel mesh before changing seeds globally."
+      ],
+      "negative": [
+        "Review the provenance digest of a mapped pressure source.",
+        "Choose the sign convention for an ordinary body load."
+      ]
+    }
+  },
+  "overlap": [
+    {
+      "name": "staged-vs-step",
+      "prompt": "A schema-1.1 contract has construction_events for set activation; distinguish staged-event conflicts from ordinary procedure and increment review.",
+      "primary": "abaqus-staged-construction-auditor",
+      "related": ["abaqus-step"]
+    },
+    {
+      "name": "mapped-vs-load",
+      "prompt": "A mapped load has source digest and face-count gaps; distinguish provenance mapping review from ordinary pressure magnitude and direction review.",
+      "primary": "abaqus-mapped-load-provenance-auditor",
+      "related": ["abaqus-load"]
+    },
+    {
+      "name": "mapped-vs-output",
+      "prompt": "A mapped load needs provenance checks and a later response variable plan; distinguish mapped-load audit from output design.",
+      "primary": "abaqus-mapped-load-provenance-auditor",
+      "related": ["abaqus-output"]
+    }
+  ]
+}

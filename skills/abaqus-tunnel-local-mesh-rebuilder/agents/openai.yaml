@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Tunnel Local Mesh Rebuilder"
+  short_description: "Repair tunnel-local mesh topology safely"
+  default_prompt: "Use $abaqus-tunnel-local-mesh-rebuilder to handle a bounded Abaqus workflow request."

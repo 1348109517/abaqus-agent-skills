@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Shared Naming Manifest Builder"
+  short_description: "Build stable names across Abaqus scripts"
+  default_prompt: "Use $abaqus-shared-naming-manifest-builder to handle a bounded Abaqus workflow request."

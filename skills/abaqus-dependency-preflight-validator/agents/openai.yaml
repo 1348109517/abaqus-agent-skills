@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Dependency Preflight Validator"
+  short_description: "Preflight cross-file Abaqus name dependencies"
+  default_prompt: "Use $abaqus-dependency-preflight-validator to handle a bounded Abaqus workflow request."

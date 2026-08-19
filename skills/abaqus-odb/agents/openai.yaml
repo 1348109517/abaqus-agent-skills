@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Odb"
+  short_description: "Inspect Abaqus ODB data without modifying it"
+  default_prompt: "Use $abaqus-odb to handle a bounded Abaqus workflow request."

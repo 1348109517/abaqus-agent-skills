@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Docs"
+  short_description: "Verify Abaqus API symbols and release details"
+  default_prompt: "Use $abaqus-docs to handle a bounded Abaqus workflow request."

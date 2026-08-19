@@ -26,7 +26,7 @@ The current command prints the following summary before the report paths:
 ```text
 Scenario: complete
 Summary:
-PASS: 8
+PASS: 10
 WARNING: 0
 REVIEW_REQUIRED: 0
 ```
@@ -34,18 +34,22 @@ REVIEW_REQUIRED: 0
 The report also states: `Static contract review only. No Abaqus solver
 execution or physical engineering validation was performed.`
 
-## 2. Run all three scenarios
+## 2. Run all five scenarios
 
 ```bash
 python scripts/run_demo.py --scenario complete
 python scripts/run_demo.py --scenario naming-drift
 python scripts/run_demo.py --scenario evidence-overreach
+python scripts/run_demo.py --scenario staged-conflict
+python scripts/run_demo.py --scenario mapped-load-gap
 ```
 
-`complete` repeats the default eight-pass audit. `naming-drift` records one `C-REF-001` finding at
+`complete` repeats the default ten-pass schema-1.1 audit. `naming-drift` records one `C-REF-001` finding at
 `loads.Gravity.region`. `evidence-overreach` records one `C-EVIDENCE-001`
-finding at `evidence.engineering_claim`. These commands complete with status 0;
-an expected teaching finding is not a runner failure.
+finding at `evidence.engineering_claim`. `staged-conflict` records two
+`C-STAGE-001` conflicts, and `mapped-load-gap` records one `C-MAPLOAD-001`
+count gap. These commands complete with status 0; an expected teaching finding
+is not a runner failure.
 
 To preview a safe skill copy, use the dry-run installer:
 

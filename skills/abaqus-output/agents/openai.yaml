@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Output"
+  short_description: "Design field and history output requests"
+  default_prompt: "Use $abaqus-output to handle a bounded Abaqus workflow request."

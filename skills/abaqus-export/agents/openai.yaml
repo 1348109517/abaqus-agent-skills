@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Export"
+  short_description: "Plan approved, traceable Abaqus exports"
+  default_prompt: "Use $abaqus-export to handle a bounded Abaqus workflow request."

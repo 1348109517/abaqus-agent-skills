@@ -25,7 +25,7 @@ class SkillInstallerTests(unittest.TestCase):
         names = list_skills(ROOT / "skills")
         self.assertEqual(tuple(sorted(names)), names)
         self.assertIn("abaqus-mesh", names)
-        self.assertEqual(17, len(names))
+        self.assertEqual(19, len(names))
 
     def test_list_skills_ignores_decoy_directory_without_direct_skill_file(self):
         from abaqus_agent_demo.installer import list_skills, plan_install
@@ -156,7 +156,7 @@ class SkillInstallerTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stderr)
         names = tuple(line for line in result.stdout.splitlines() if line)
         self.assertEqual(tuple(sorted(names)), names)
-        self.assertEqual(17, len(names))
+        self.assertEqual(19, len(names))
 
     def test_cli_dry_run_requires_target_and_does_not_copy(self):
         with TemporaryDirectory() as directory:

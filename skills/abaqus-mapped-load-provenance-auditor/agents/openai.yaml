@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Mapped Load Provenance Auditor"
+  short_description: "Audit mapped-load provenance and face counts"
+  default_prompt: "Use $abaqus-mapped-load-provenance-auditor to handle a bounded Abaqus workflow request."

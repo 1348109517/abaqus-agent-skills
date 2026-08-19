@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0 - 2026-08-20
+
+- Add schema-1.1 optional `construction_events` and `mapped_loads` contract
+  sections with dedicated `C-STAGE-001` and `C-MAPLOAD-001` static checks.
+- Add clean-room staged-construction and mapped-load provenance skills with
+  static, read-only safety gates.
+- Add schema-1.1 complete, staged-conflict, and mapped-load-gap demo scenarios.
+- Add 19-skill UI metadata, routing corpus, generalized routing baseline, and
+  Git-aware privacy/release scanning with safe fallback exclusions.
+- Update bilingual README, selection, compatibility, architecture, quickstart,
+  and demo documentation.
+
 ## 0.3.0 - 2026-08-13
 
 - Add a deterministic, standard-library-only CLI demo for synthetic

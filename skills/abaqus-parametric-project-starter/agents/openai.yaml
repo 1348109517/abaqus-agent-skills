@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Parametric Project Starter"
+  short_description: "Scaffold a clean-room parametric Abaqus project"
+  default_prompt: "Use $abaqus-parametric-project-starter to handle a bounded Abaqus workflow request."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Load"
+  short_description: "Review Abaqus loads, units, signs, and steps"
+  default_prompt: "Use $abaqus-load to handle a bounded Abaqus workflow request."

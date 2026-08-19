@@ -1,6 +1,6 @@
 # Runnable demo
 
-The v0.3.0 demo is a small, deterministic reference workflow. It loads a
+The v0.4.0 demo is a small, deterministic reference workflow. It loads a
 synthetic JSON contract, checks names and relationships that are useful during
 an Abaqus automation review, and writes the same findings as Markdown and JSON.
 It uses Python's standard library and does not require Abaqus, an ODB, a
@@ -22,6 +22,8 @@ Choose a committed scenario explicitly when teaching or debugging:
 python scripts/run_demo.py --scenario complete
 python scripts/run_demo.py --scenario naming-drift
 python scripts/run_demo.py --scenario evidence-overreach
+python scripts/run_demo.py --scenario staged-conflict
+python scripts/run_demo.py --scenario mapped-load-gap
 ```
 
 The CLI also accepts a small, explicitly selected contract and output target:
@@ -46,8 +48,9 @@ contract loader -> static checks -> ordered findings -> report writer
 ```
 
 The contract declares units, model names, materials, sections, steps, boundary
-conditions, loads, interactions, mesh intent, output requests, review intent,
-and evidence statuses. The checker verifies the declared shape and references;
+conditions, loads, staged construction events, mapped-load provenance,
+interactions, mesh intent, output requests, review intent, and evidence statuses.
+The checker verifies the declared shape and references;
 it does not open a `.cae`, `.odb`, or `.inp` file and does not infer a physical
 result.
 
@@ -65,9 +68,11 @@ for the committed contracts and literal expected non-pass findings.
 
 | Scenario | What it demonstrates | Expected static result |
 |---|---|---|
-| `complete` | Consistent synthetic names, references, steps, outputs, and evidence declarations | 8 `PASS`, 0 `WARNING`, 0 `REVIEW_REQUIRED` |
+| `complete` | Consistent schema-1.1 names, references, staged event, mapped load, outputs, and evidence declarations | 10 `PASS`, 0 `WARNING`, 0 `REVIEW_REQUIRED` |
 | `naming-drift` | `Gravity` refers to `ExcavationFaceRenamed`, which is not declared | 7 `PASS`, 0 `WARNING`, 1 `REVIEW_REQUIRED` (`C-REF-001`) |
 | `evidence-overreach` | An engineering claim is marked approved while solver and physical-review gates are incomplete | 7 `PASS`, 0 `WARNING`, 1 `REVIEW_REQUIRED` (`C-EVIDENCE-001`) |
+| `staged-conflict` | Two construction events target one model set in one step | 9 `PASS`, 0 `WARNING`, 2 `REVIEW_REQUIRED` (`C-STAGE-001`) |
+| `mapped-load-gap` | Mapped and unmapped face counts do not equal expected faces | 9 `PASS`, 0 `WARNING`, 1 `REVIEW_REQUIRED` (`C-MAPLOAD-001`) |
 
 Expected teaching findings are still successful demo runs. A nonzero exit is
 reserved for invalid input or an I/O failure, not for a finding that tells a
@@ -85,6 +90,8 @@ human to review a dependency or evidence gate.
 | `C-MESH-001` | Every declared part has one mesh intent and an element-family declaration |
 | `C-OUTPUT-001` | Every output required by the review intent is declared |
 | `C-EVIDENCE-001` | An engineering claim does not skip the declared solver and physical-review gates |
+| `C-STAGE-001` | Optional schema-1.1 construction events resolve to sets and steps without conflicts |
+| `C-MAPLOAD-001` | Optional schema-1.1 mapped-load provenance, digest, references, and face counts are consistent |
 
 Statuses have a narrow meaning:
 

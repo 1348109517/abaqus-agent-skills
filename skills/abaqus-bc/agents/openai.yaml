@@ -1,0 +1,4 @@
+interface:
+  display_name: "Abaqus Bc"
+  short_description: "Review supports, symmetry, and pressure BCs"
+  default_prompt: "Use $abaqus-bc to handle a bounded Abaqus workflow request."
