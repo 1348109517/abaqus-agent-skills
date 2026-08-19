@@ -60,6 +60,13 @@ python -m unittest discover -s tests -v
 
 演示和代码库测试不需要 Abaqus、ODB、许可证或第三方 Python 包。
 
+## 证据交接
+
+确定性的 `report.json` 可使用已发布的
+[Engineering Evidence Toolkit v0.2.0](https://github.com/1348109517/engineering-evidence-toolkit/releases/tag/v0.2.0)
+转换为 evidence-contract 0.2。该适配器记录静态审计及来源摘要，并继续对求解器生命周期
+和物理审查状态设门，不会把静态报告提升为工程结论。
+
 ## 内容
 
 - 项目脚手架、依赖预检、共享命名清单和脚本调试；

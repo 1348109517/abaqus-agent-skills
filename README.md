@@ -66,6 +66,15 @@ python -m unittest discover -s tests -v
 The demo and repository tests do not require Abaqus, an ODB, a license, or
 third-party Python packages.
 
+## Evidence handoff
+
+The deterministic `report.json` can be converted into an evidence-contract
+0.2 handoff with the stable
+[Engineering Evidence Toolkit v0.2.0](https://github.com/1348109517/engineering-evidence-toolkit/releases/tag/v0.2.0).
+That adapter records a static audit and its source digests; it deliberately
+keeps solver and physical-review lifecycle states gated rather than turning a
+static report into an engineering conclusion.
+
 ## Skill catalog
 
 | Skill | Use it for |
